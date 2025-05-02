@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
         <dimen name="radius">16dp</dimen>
-        <dimen name="icon_padding">10dp</dimen>
-        <dimen name="margin">10dp</dimen>
-        <dimen name="margin_settings">15dp</dimen>
+        <dimen name="icon_padding">8dp</dimen>
+        <dimen name="margin">8dp</dimen>
+        <dimen name="margin_settings">16dp</dimen>
         <dimen name="big_button_text_size">26sp</dimen>
         <dimen name="settings_text_size">16sp</dimen>
         <dimen name="bottom_text_size">12sp</dimen>
