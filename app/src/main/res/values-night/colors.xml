@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="text">#FFFFFFFF</color>
+    <color name="icon">#FFFFFFFF</color>
+    <color name="background_main">#FF000000</color>
+    <color name="background_screan">#FF000000</color>
+    <color name="switchedBW">#FF000000</color>
+    <color name="search_field">#FFFFFFFF</color>
+    <color name="edit_text_field">#FF000000</color>
+</resources>

@@ -4,93 +4,64 @@
 
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/activity_settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SettingsActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_settings">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation ="vertical"
-            android:layout_marginTop="30dp"
-            android:padding ="@dimen/margin_settings"
-            >
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/margin_settings">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/backToMainFromSettings"
+                style="@style/ReturnArrowStyle"
+                app:tint="@color/icon"
 
-                <Button
-                    android:id="@+id/backToMainFromSettings"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:backgroundTint="@color/white"
-                    app:icon="@drawable/arrow_back"
-                    app:iconGravity="start"
-                    app:iconTint="@color/black"
-                    style="?android:attr/borderlessButtonStyle"
-                     />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/Настройки"
-                    android:textColor="@color/black"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <Switch
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="UseSwitchCompatOrMaterialXml"
-                android:text="@string/dark_theme"
-                android:textColor="@color/black"
-                android:textSize="@dimen/settings_text_size"
-                android:layout_gravity="start"
-                android:padding ="@dimen/margin_settings" />
-
+                 />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding ="@dimen/margin_settings"
-                android:text="@string/share_app"
-                android:textColor="@color/black"
-                android:textSize="@dimen/settings_text_size"
-                android:layout_gravity="start"
-                app:drawableEndCompat="@drawable/icon_share"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding ="@dimen/margin_settings"
-                android:text="@string/write_to_support"
-                android:textColor="@color/black"
-                android:textSize="@dimen/settings_text_size"
-                android:layout_gravity="start"
-                app:drawableEndCompat="@drawable/icon_suppot"/>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding ="@dimen/margin_settings"
-                android:text="@string/user_agr"
-                android:textColor="@color/black"
-                android:textSize="@dimen/settings_text_size"
-                android:layout_gravity="start"
-                app:drawableEndCompat="@drawable/icon_arrow_forward"/>
-
-
+                style="@style/Tittle"
+                android:layout_marginTop="12dp"
+                android:text="@string/Настройки"/>
 
         </LinearLayout>
 
+        <Switch
+            style="@style/SettingsTextView"
+            android:text="@string/dark_theme"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
 
+
+        <TextView
+            android:id="@+id/shareApp"
+            style="@style/SettingsTextView"
+            android:text="@string/share_app"
+            app:drawableEndCompat="@drawable/icon_share" />
+
+        <TextView
+            android:id="@+id/textToSupport"
+            style="@style/SettingsTextView"
+            android:text="@string/write_to_support"
+            app:drawableEndCompat="@drawable/icon_suppot" />
+
+
+        <TextView
+            android:id="@+id/userAgreement"
+            style="@style/SettingsTextView"
+            android:text="@string/user_agr"
+            app:drawableEndCompat="@drawable/icon_arrow_forward" />
+
+
+    </LinearLayout>
 
 
 </LinearLayout>
