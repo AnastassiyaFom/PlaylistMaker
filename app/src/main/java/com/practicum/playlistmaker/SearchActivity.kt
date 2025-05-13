@@ -20,10 +20,6 @@ import androidx.core.view.WindowInsetsCompat
 class SearchActivity : AppCompatActivity() {
     private var searchRequest:String?=null
 
-    companion object {
-        const val SEARCH_REQUEST = "SEARCH_REQUEST"
-        const val SEARCH_REQUEST_DEF = ""
-    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -52,7 +48,7 @@ class SearchActivity : AppCompatActivity() {
             inputEditText.setText(searchRequest)
         }
 
-        val clearButton = findViewById<TextView>(R.id.clearSearch)
+        val clearButton = findViewById<ImageView>(R.id.clearSearch)
 
        backButton.setOnClickListener {
             val butBackClickListener = Intent(this, MainActivity::class.java)
@@ -98,6 +94,12 @@ class SearchActivity : AppCompatActivity() {
         } else {
             return View.VISIBLE
         }
+    }
+
+
+    companion object {
+        const val SEARCH_REQUEST = "SEARCH_REQUEST"
+        const val SEARCH_REQUEST_DEF = ""
     }
 
 }
