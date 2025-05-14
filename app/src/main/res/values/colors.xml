@@ -5,6 +5,7 @@
     <color name="text">#FF000000</color>
     <color name="icon">#FF000000</color>
     <color name="background_main">#3772E7</color>
+    <color name="background_not_main">#FFFFFFFF</color>
     <color name="background_screan">#FFFFFFFF</color>
     <color name="switchedBW">#FF000000</color>
     <color name="search_field">#E6E8EB</color>
