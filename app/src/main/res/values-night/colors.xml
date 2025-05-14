@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="text">#FFFFFFFF</color>
+    <color name="icon">#FFFFFFFF</color>
+    <color name="background_main">#1A1B22</color>
+    <color name="background_not_main">#1A1B22</color>
+    <color name="background_screan">#1A1B22</color>
+    <color name="switchedBW">#FF000000</color>
+    <color name="search_field">#FFFFFFFF</color>
+    <color name="edit_text_field">#1A1B22</color>
+    <color name="switch_track">#9FBBF3</color>
+    <color name="switch_tumb">#3772E7</color>
+    <color name="clear_icon">#1A1B22</color>
+</resources>
