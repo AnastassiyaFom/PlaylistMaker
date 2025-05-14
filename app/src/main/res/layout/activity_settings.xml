@@ -29,20 +29,19 @@
             <ImageView
                 android:id="@+id/backToMainFromSettings"
                 style="@style/ReturnArrowStyle"
-                app:tint="@color/icon"
+
 
                 />
             <TextView
                 style="@style/Tittle"
-                android:layout_marginLeft="24dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="12dp"
                 android:text="@string/Настройки" />
 
         </LinearLayout>
 
         <Switch
             style="@style/SettingsTextView"
-            android:layout_marginEnd="11dp"
+            android:layout_marginEnd="4dp"
             android:text="@string/dark_theme"
             tools:ignore="UseSwitchCompatOrMaterialXml"
             android:trackTint="@color/switch_track"
