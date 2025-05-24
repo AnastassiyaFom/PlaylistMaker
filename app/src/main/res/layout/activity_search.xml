@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:id="@+id/activity_search"
     android:background="@color/background_not_main"
     android:layout_width="match_parent"
@@ -45,6 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingEnd="@dimen/margin_settings"
+            android:layout_marginBottom="@dimen/margin_settings"
             android:paddingTop="8dp">
 
             <EditText
@@ -78,6 +80,12 @@
                  />
         </FrameLayout>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tracksList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </LinearLayout>
 
 
