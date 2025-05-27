@@ -16,7 +16,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 1
 
-/////////////////////////////////
+////////////////////////////////////
 class TracksAdapter (
     private val tracks: List<Track>
 ) : RecyclerView.Adapter<TracksViewHolder> (){
