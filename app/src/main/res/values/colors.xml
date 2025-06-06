@@ -16,6 +16,9 @@
     <color name="icon_todo">#AEAFB4</color>
     <color name="artist_name">#AEAFB4</color>
     <color name="track_name">#FF000000</color>
+    <color name="ic_black_white">#1A1B22</color>
+    <color name="refresh_button_text">#FFFFFF</color>
+    <color name="refresh_button_tint">#1A1B22</color>
 
 
 

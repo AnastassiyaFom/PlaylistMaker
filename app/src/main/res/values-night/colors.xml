@@ -16,5 +16,7 @@
     <color name="icon_todo">#FFFFFFFF</color>
     <color name="artist_name">#FFFFFFFF</color>
     <color name="track_name">#FFFFFFFF</color>
-
+    <color name="ic_black_white">#FFFFFFFF</color>
+    <color name="refresh_button_text">#1A1B22</color>
+    <color name="refresh_button_tint">#FFFFFF</color>
 </resources>
