@@ -49,7 +49,7 @@ class SearchActivity : AppCompatActivity() {
 
     val trackSearchApiService = retrofit.create(TrackSearchApi::class.java)
 
-    private var tracks = ArrayList<Track>()
+    private var tracks:MutableList<Track> = mutableListOf()
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -173,9 +173,10 @@ class SearchActivity : AppCompatActivity() {
             if (response.isSuccessful) {
                 // Наш запрос был удачным, получаем ответ в JSON-тексте
                 tracks.clear()
-                if (response.body()?.results?.isNotEmpty() == true) {
+                var responseResults = response.body()?.results
+                if (responseResults?.isNotEmpty() == true && responseResults!=null ) {
                     response.body()?.setFormatTarckTime()
-                    tracks.addAll(response.body()?.results!!)
+                    tracks.addAll(responseResults)
                     recycler.adapter?.notifyDataSetChanged()
                 }
                 else {
@@ -211,29 +212,11 @@ class SearchActivity : AppCompatActivity() {
         const val TRACKS_LIST = "TRACKS_LIST"
         const val TRACKS_LIST_DEF = ""
     }
-
-
-
-
 }
 
-class TracksSearchRequest(val text: String) {}
-class TracksSearchResponse(
-    val resultCount:Int,
-    val results: ArrayList<Track>) {
-    fun setFormatTarckTime() {
-        for (track in this.results){
-            track.trackTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
-        }
+//class TracksSearchRequest(val text: String) {}
 
-    }
-}
 
-interface TrackSearchApi {
-
-    @POST("/search?entity=song")
-    fun searchTrack(@Query("term") text: String): Call<TracksSearchResponse>
-}
 
 
 
