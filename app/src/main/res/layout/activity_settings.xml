@@ -41,6 +41,7 @@
         </LinearLayout>
 
         <Switch
+            android:id="@+id/themeSwitcher"
             style="@style/SettingsTextView"
             android:layout_marginEnd="4dp"
             android:text="@string/dark_theme"
