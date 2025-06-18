@@ -14,7 +14,10 @@
     <string name="user_agreement_link">"https://yandex.ru/legal/practicum_offer"</string>
     <string name="error_no_internet">"Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету"</string>
     <string name="error_track_not_found">"Ничего не нашлось"</string>
-    <string name="refrash">"Обновить"</string>/
+    <string name="refrash">"Обновить"</string>
+    <string name="search_history">"Вы искали"</string>
+    <string name="clear_history">"Очистить историю"</string>
+
 
 
 

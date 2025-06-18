@@ -5,9 +5,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.practicum.playlistmaker.App
+
 
 class SettingsActivity : AppCompatActivity() {
     @SuppressLint("WrongViewCast", "MissingInflatedId")
@@ -21,6 +25,14 @@ class SettingsActivity : AppCompatActivity() {
             val butBackClickListener = Intent(this, MainActivity::class.java)
             butBackClickListener.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             this.finish()
+        }
+
+        // Темная тема
+        val themeSwitcher = findViewById<Switch>(R.id.themeSwitcher)
+        themeSwitcher.setChecked((applicationContext as App).getDarkThemeFlag())
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+
         }
 
         // Поделиться приложением в мессенджерах и т.п.
@@ -60,5 +72,7 @@ class SettingsActivity : AppCompatActivity() {
 на устройстве пользователя по умолчанию. В качестве ссылки
  на веб-страницу используйте ссылку на оферту на оказание образовательных услуг Яндекс Практикума.*/
     }
+
+
 
 }

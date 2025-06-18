@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,10 +23,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.POST
-import retrofit2.http.Query
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 
 @Suppress("DEPRECATION")
@@ -37,9 +34,13 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var inputEditText: EditText
     private lateinit var clearButton : ImageView
     private lateinit var recycler: RecyclerView
+    private lateinit var historyRecycler: RecyclerView
     private lateinit var noInternetView: ViewGroup
     private lateinit var refrashButton: Button
     private lateinit var trackNotFound: TextView
+    private lateinit var deleteTracksHistoryButton: Button
+    private lateinit var searchHistoryView: ViewGroup
+
 
 
     private val retrofit = Retrofit.Builder()
@@ -49,15 +50,17 @@ class SearchActivity : AppCompatActivity() {
 
     val trackSearchApiService = retrofit.create(TrackSearchApi::class.java)
 
-    private var tracks:MutableList<Track> = mutableListOf()
+
+    private var tracks : MutableList<Track> = mutableListOf()
+    private lateinit var  sharedPrefs: SharedPreferences
+
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_REQUEST, searchRequest)
         outState.putSerializable(TRACKS_LIST, tracks as java.util.ArrayList<*>)
    }
-
-
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -74,15 +77,26 @@ class SearchActivity : AppCompatActivity() {
             this.onRestoreInstanceState(savedInstanceState)
         }
 
+        sharedPrefs = getSharedPreferences(TRACKS_HISTORY_PREFERENCES, MODE_PRIVATE)
+        var tracksHistory  = SearchHistory(sharedPrefs)
+
 
         backButton = findViewById<ImageView>(R.id.backToMainFromSearch)
         inputEditText = findViewById<EditText>(R.id.inputEditText)
         clearButton = findViewById<ImageView>(R.id.clearSearch)
         recycler = findViewById<RecyclerView>(R.id.tracksList)
+        historyRecycler = findViewById<RecyclerView>(R.id.tracksHistoryList)
         noInternetView = findViewById<ViewGroup>(R.id.error_no_internet)
         refrashButton = findViewById<Button>(R.id.refrash_button)
         trackNotFound = findViewById<TextView>(R.id.error_track_not_found)
+        deleteTracksHistoryButton = findViewById<Button>(R.id.clear_history)
+        searchHistoryView= findViewById<ViewGroup>(R.id.search_history)
 
+        deleteTracksHistoryButton.setOnClickListener {
+            tracksHistory.clearHistory()
+            historyRecycler.adapter?.notifyDataSetChanged()
+            searchHistoryView.visibility=View.GONE
+        }
 
         refrashButton.setOnClickListener {
             trackSearchApiService.searchTrack(inputEditText.text.toString())
@@ -120,15 +134,19 @@ class SearchActivity : AppCompatActivity() {
            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                if (s.isNullOrEmpty()) {
                    clearButton.visibility = clearButtonVisibility(s)
-
+                   if (inputEditText.hasFocus() && tracksHistory.tracksInHistory.isNotEmpty())
+                       searchHistoryView.visibility=View.VISIBLE
+                   else searchHistoryView.visibility=View.GONE
 
                } else {
                    searchRequest = s.toString()
                }
                clearButton.visibility = clearButtonVisibility(s)
+
            }
            override fun afterTextChanged(s: Editable?) {
                // empty
+
            }
        }
 
@@ -139,17 +157,34 @@ class SearchActivity : AppCompatActivity() {
                 // ВЫПОЛНЯЙТЕ ПОИСКОВЫЙ ЗАПРОС ЗДЕСЬ
                 true
                 if (inputEditText.text.isNotEmpty()) {
-
+                    searchHistoryView.visibility=View.GONE
                     trackSearchApiService.searchTrack(inputEditText.text.toString())
                         .enqueue(callback)
                 }
             }
             false
         }
+
+        inputEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus && inputEditText.text.isEmpty() && tracksHistory.tracksInHistory.isNotEmpty())
+                searchHistoryView.visibility=View.VISIBLE
+            else searchHistoryView.visibility=View.GONE
+        }
+
+        recycler.adapter = TracksAdapter(tracks, object:OnItemClickListener{
+            override fun onItemClick(position: Int) {
+                tracksHistory.addTrackToHistory(tracks[position])
+                historyRecycler.adapter?.notifyItemRemoved(tracksHistory.tracksInHistoryMaxLength-1)
+                historyRecycler.adapter?.notifyItemInserted(0)
+
+            }
+        })
         recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = TracksAdapter(tracks)
 
-
+        historyRecycler.adapter = TracksAdapter(tracksHistory.getTracksFromHistory(), object:OnItemClickListener{
+            override fun onItemClick(position: Int) {}
+        })
+        historyRecycler.layoutManager = LinearLayoutManager(this)
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -178,6 +213,7 @@ class SearchActivity : AppCompatActivity() {
                     response.body()?.setFormatTarckTime()
                     tracks.addAll(responseResults)
                     recycler.adapter?.notifyDataSetChanged()
+
                 }
                 else {
 
@@ -192,10 +228,9 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-
         override fun onFailure(call: Call<TracksSearchResponse>, t: Throwable) {
             // Не смогли соединиться с сервером
-            // Выводим ошибку в лог, что-то пошло не так
+
             tracks.clear()
             recycler.adapter?.notifyDataSetChanged()
             t.printStackTrace()
@@ -208,7 +243,7 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_REQUEST = "SEARCH_REQUEST"
         const val SEARCH_REQUEST_DEF = ""
-
+        const val TRACKS_HISTORY_PREFERENCES = "Tracks History Preferences"
         const val TRACKS_LIST = "TRACKS_LIST"
         const val TRACKS_LIST_DEF = ""
     }
