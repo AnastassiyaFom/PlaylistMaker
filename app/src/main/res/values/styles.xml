@@ -89,4 +89,13 @@
         <item name="android:layout_marginTop">24dp</item>
         <item name="cornerRadius">54dp</item>
     </style>
+    <style name="TrackInfoLibrary" parent="TrackInfo">
+        <item name="android:textSize">13sp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">#AEAFB4</item>
+    </style>
+    <style name="TrackDataLibrary" parent="TrackInfoLibrary">
+        <item name="android:textColor">@color/text</item>
+    </style>
 </resources>

@@ -19,4 +19,5 @@
     <color name="ic_black_white">#FFFFFFFF</color>
     <color name="refresh_button_text">#1A1B22</color>
     <color name="refresh_button_tint">#FFFFFF</color>
+    <color name="button_library">#FFFFFFFF</color>
 </resources>
