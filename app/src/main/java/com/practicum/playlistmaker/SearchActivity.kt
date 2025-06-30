@@ -28,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 @Suppress("DEPRECATION")
 class SearchActivity : AppCompatActivity() {
     private var searchRequest:String?=null
-    
+
     // Интерактивные элементы экрана
     private lateinit var backButton : ImageView
     private lateinit var inputEditText: EditText
@@ -53,19 +53,19 @@ class SearchActivity : AppCompatActivity() {
 
     private var tracks : MutableList<Track> = mutableListOf()
     private lateinit var  sharedPrefs: SharedPreferences
-
+    private lateinit var tracksHistory: SearchHistory
 
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_REQUEST, searchRequest)
-        outState.putSerializable(TRACKS_LIST, tracks as java.util.ArrayList<*>)
+        outState.putParcelableArrayList(TRACKS_LIST, tracks as ArrayList<Track>)
    }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         searchRequest = savedInstanceState.getString(SEARCH_REQUEST, SEARCH_REQUEST_DEF)
-        tracks = savedInstanceState.getSerializable(TRACKS_LIST) as ArrayList<Track>
+        tracks = savedInstanceState.getParcelableArrayList<Track>(TRACKS_LIST)!! as MutableList<Track>
     }
 
     @SuppressLint("MissingInflatedId")
@@ -78,8 +78,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         sharedPrefs = getSharedPreferences(TRACKS_HISTORY_PREFERENCES, MODE_PRIVATE)
-        var tracksHistory  = SearchHistory(sharedPrefs)
-
+        tracksHistory = SearchHistory(sharedPrefs)
 
         backButton = findViewById<ImageView>(R.id.backToMainFromSearch)
         inputEditText = findViewById<EditText>(R.id.inputEditText)
@@ -97,6 +96,7 @@ class SearchActivity : AppCompatActivity() {
             historyRecycler.adapter?.notifyDataSetChanged()
             searchHistoryView.visibility=View.GONE
         }
+
 
         refrashButton.setOnClickListener {
             trackSearchApiService.searchTrack(inputEditText.text.toString())
@@ -163,6 +163,7 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
             false
+
         }
 
         inputEditText.setOnFocusChangeListener { v, hasFocus ->
@@ -176,13 +177,16 @@ class SearchActivity : AppCompatActivity() {
                 tracksHistory.addTrackToHistory(tracks[position])
                 historyRecycler.adapter?.notifyItemRemoved(tracksHistory.tracksInHistoryMaxLength-1)
                 historyRecycler.adapter?.notifyItemInserted(0)
-
+                toLibrary(tracks[position])
             }
         })
         recycler.layoutManager = LinearLayoutManager(this)
 
         historyRecycler.adapter = TracksAdapter(tracksHistory.getTracksFromHistory(), object:OnItemClickListener{
-            override fun onItemClick(position: Int) {}
+            override fun onItemClick(position: Int) {
+                // Наверное, вызывать два раза метод get дольше, чем завести переменнную......
+                toLibrary(tracksHistory.getTracksFromHistory()[position])
+            }
         })
         historyRecycler.layoutManager = LinearLayoutManager(this)
     }
@@ -238,6 +242,14 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private fun toLibrary(item:Track) {
+        val intent = Intent(this, LibraryActivity::class.java)
+        // для передачи всего списка в проигрыватель, задел на будущее
+        // intent.putExtra(HISTORY_TRACKS_LIST, tracksHistory.getTracksFromHistory() as Array<Track>)
+        intent.putExtra(CHECKED_TRACK, item)
+        this.onPause()
+        startActivity(intent)
+    }
 
 
     companion object {
@@ -245,6 +257,8 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_REQUEST_DEF = ""
         const val TRACKS_HISTORY_PREFERENCES = "Tracks History Preferences"
         const val TRACKS_LIST = "TRACKS_LIST"
+        const val HISTORY_TRACKS_LIST = "HISTORY_TRACKS_LIST"
+        const val CHECKED_TRACK = "CHECKED_TRACK"
         const val TRACKS_LIST_DEF = ""
     }
 }

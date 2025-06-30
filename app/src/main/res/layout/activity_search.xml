@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/margin_settings"
+        android:paddingLeft="@dimen/margin_frame"
         tools:layout_editor_absoluteX="62dp"
         tools:layout_editor_absoluteY="0dp">
 
@@ -45,9 +45,9 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_settings"
+            android:layout_marginBottom="@dimen/margin_frame"
             android:paddingTop="8dp"
-            android:paddingEnd="@dimen/margin_settings">
+            android:paddingEnd="@dimen/margin_frame">
 
             <EditText
                 android:id="@+id/inputEditText"
@@ -137,7 +137,7 @@
                     android:paddingTop="18dp"
                     android:paddingBottom="12dp"
                     android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="@dimen/margin_settings"
+                    android:layout_marginEnd="@dimen/margin_frame"
                     android:text="@string/search_history"
                     />
                 <androidx.recyclerview.widget.RecyclerView
