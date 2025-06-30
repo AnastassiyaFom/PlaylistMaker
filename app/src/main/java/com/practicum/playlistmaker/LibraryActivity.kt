@@ -68,12 +68,8 @@ class LibraryActivity : AppCompatActivity() {
                 checkedTrack = Gson().fromJson(json, object : TypeToken<Track>() {}.type )
             }
         }
-        //val tracks: Array<out Parcelable>? = intent.getParcelableArrayExtra(HISTORY_TRACKS_LIST)
-       // val checkedTrack: Track? = intent.getParcelableExtra<Track>(CHECKED_TRACK)
 
         backButton.setOnClickListener {
-            // val butBackClickListener = Intent(this, MainActivity::class.java)
-            // butBackClickListener.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             if (checkedTrack!=null){
                 var json:String?=Gson().toJson(checkedTrack)
                 sharedPrefs.edit()

@@ -146,7 +146,7 @@
                 android:id="@+id/playing_track_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="0:30"
+                android:text="0:30"
                 app:layout_constraintEnd_toStartOf="@id/track_guideline_right"
                 app:layout_constraintStart_toStartOf="@id/track_guideline_left"
                 app:layout_constraintTop_toBottomOf="@id/play_button_pause"
@@ -161,7 +161,7 @@
                 android:id="@+id/duration_text"
                 style="@style/TrackInfoLibrary"
                 android:text="@string/duration"
-                app:layout_constraintStart_toStartOf="@id/track_guideline_left"
+                app:layout_constraintStart_toStartOf="@id/arrow_guideline_left"
                 app:layout_constraintTop_toBottomOf="@id/playing_track_time"
                 android:paddingTop="39dp"
                 />
@@ -178,7 +178,7 @@
                 android:id="@+id/collection_text"
                 style="@style/TrackInfoLibrary"
                 android:text="@string/album"
-                app:layout_constraintStart_toStartOf="@id/track_guideline_left"
+                app:layout_constraintStart_toStartOf="@id/arrow_guideline_left"
                 app:layout_constraintTop_toBottomOf="@id/duration_text"
                 android:paddingTop="@dimen/padding_in_library"
                 />
@@ -199,7 +199,7 @@
                 android:id="@+id/year_text"
                 style="@style/TrackInfoLibrary"
                 android:text="@string/year"
-                app:layout_constraintStart_toStartOf="@id/track_guideline_left"
+                app:layout_constraintStart_toStartOf="@id/arrow_guideline_left"
                 app:layout_constraintTop_toBottomOf="@id/collection_data"
                 android:paddingTop="@dimen/padding_in_library"
                 />
@@ -216,7 +216,7 @@
                 android:id="@+id/genre_text"
                 style="@style/TrackInfoLibrary"
                 android:text="@string/genre"
-                app:layout_constraintStart_toStartOf="@id/track_guideline_left"
+                app:layout_constraintStart_toStartOf="@id/arrow_guideline_left"
                 app:layout_constraintTop_toBottomOf="@id/year_text"
                 android:paddingTop="@dimen/padding_in_library"
                 />
@@ -233,7 +233,7 @@
                 android:id="@+id/country_text"
                 style="@style/TrackInfoLibrary"
                 android:text="@string/country"
-                app:layout_constraintStart_toStartOf="@id/track_guideline_left"
+                app:layout_constraintStart_toStartOf="@id/arrow_guideline_left"
                 app:layout_constraintTop_toBottomOf="@id/genre_text"
                 android:paddingTop="@dimen/padding_in_library"
                 android:paddingBottom="50dp"
