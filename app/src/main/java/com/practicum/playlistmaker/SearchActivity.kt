@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -13,6 +15,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +32,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 class SearchActivity : AppCompatActivity() {
     private var searchRequest:String?=null
 
+    //Вспомагательные переменные для debouncer
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { searchRequest() }
+
     // Интерактивные элементы экрана
     private lateinit var backButton : ImageView
     private lateinit var inputEditText: EditText
@@ -40,6 +48,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackNotFound: TextView
     private lateinit var deleteTracksHistoryButton: Button
     private lateinit var searchHistoryView: ViewGroup
+    private lateinit var progressBarView: ProgressBar
 
 
 
@@ -90,6 +99,7 @@ class SearchActivity : AppCompatActivity() {
         trackNotFound = findViewById<TextView>(R.id.error_track_not_found)
         deleteTracksHistoryButton = findViewById<Button>(R.id.clear_history)
         searchHistoryView= findViewById<ViewGroup>(R.id.search_history)
+        progressBarView=findViewById<ProgressBar>(R.id.progressBar)
 
         deleteTracksHistoryButton.setOnClickListener {
             tracksHistory.clearHistory()
@@ -132,6 +142,7 @@ class SearchActivity : AppCompatActivity() {
            }
 
            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
                if (s.isNullOrEmpty()) {
                    clearButton.visibility = clearButtonVisibility(s)
                    if (inputEditText.hasFocus() && tracksHistory.tracksInHistory.isNotEmpty())
@@ -140,6 +151,7 @@ class SearchActivity : AppCompatActivity() {
 
                } else {
                    searchRequest = s.toString()
+                   searchDebounce()
                }
                clearButton.visibility = clearButtonVisibility(s)
 
@@ -152,6 +164,14 @@ class SearchActivity : AppCompatActivity() {
 
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
+
+        // Автоматизируйте выполнение запроса при помощи debounce.
+        // Реализуйте эту логику по аналогии с рассмотренным примером в предыдущей теме.
+
+
+
+
+/*
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 // ВЫПОЛНЯЙТЕ ПОИСКОВЫЙ ЗАПРОС ЗДЕСЬ
@@ -165,30 +185,46 @@ class SearchActivity : AppCompatActivity() {
             false
 
         }
-
+*/
         inputEditText.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus && inputEditText.text.isEmpty() && tracksHistory.tracksInHistory.isNotEmpty())
                 searchHistoryView.visibility=View.VISIBLE
             else searchHistoryView.visibility=View.GONE
         }
 
+
+
         recycler.adapter = TracksAdapter(tracks, object:OnItemClickListener{
             override fun onItemClick(position: Int) {
-                tracksHistory.addTrackToHistory(tracks[position])
-                historyRecycler.adapter?.notifyItemRemoved(tracksHistory.tracksInHistoryMaxLength-1)
-                historyRecycler.adapter?.notifyItemInserted(0)
-                toLibrary(tracks[position])
+                //Для предотвращения двойных нажатий на элемент
+                if (clickDebounce()){
+                    tracksHistory.addTrackToHistory(tracks[position])
+                    historyRecycler.adapter?.notifyItemRemoved(tracksHistory.tracksInHistoryMaxLength-1)
+                    historyRecycler.adapter?.notifyItemInserted(0)
+                    toLibrary(tracks[position])
+                }
             }
         })
         recycler.layoutManager = LinearLayoutManager(this)
 
         historyRecycler.adapter = TracksAdapter(tracksHistory.getTracksFromHistory(), object:OnItemClickListener{
             override fun onItemClick(position: Int) {
-                // Наверное, вызывать два раза метод get дольше, чем завести переменнную......
-                toLibrary(tracksHistory.getTracksFromHistory()[position])
+                if (clickDebounce()) {
+                    toLibrary(tracksHistory.getTracksFromHistory()[position])
+                }
             }
         })
         historyRecycler.layoutManager = LinearLayoutManager(this)
+    }
+
+
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -208,6 +244,7 @@ class SearchActivity : AppCompatActivity() {
         ) {
             noInternetView.visibility = View.GONE
             trackNotFound.visibility=View.GONE
+            progressBarView.visibility = View.GONE
             // Получили ответ от сервера
             if (response.isSuccessful) {
                 // Наш запрос был удачным, получаем ответ в JSON-тексте
@@ -241,6 +278,21 @@ class SearchActivity : AppCompatActivity() {
             noInternetView.visibility=View.VISIBLE
         }
     }
+    private fun searchRequest(){
+        if (inputEditText.text.isNotEmpty()) {
+            searchHistoryView.visibility=View.GONE
+            progressBarView.visibility = View.VISIBLE
+            trackSearchApiService.searchTrack(inputEditText.text.toString())
+                .enqueue(callback)
+        }
+
+    }
+
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
 
     private fun toLibrary(item:Track) {
         val intent = Intent(this, LibraryActivity::class.java)
@@ -251,7 +303,6 @@ class SearchActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-
     companion object {
         const val SEARCH_REQUEST = "SEARCH_REQUEST"
         const val SEARCH_REQUEST_DEF = ""
@@ -260,6 +311,8 @@ class SearchActivity : AppCompatActivity() {
         const val HISTORY_TRACKS_LIST = "HISTORY_TRACKS_LIST"
         const val CHECKED_TRACK = "CHECKED_TRACK"
         const val TRACKS_LIST_DEF = ""
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 }
 

@@ -2,30 +2,34 @@ package com.practicum.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-
 import android.content.res.Resources
+import android.media.MediaPlayer
 import android.os.Bundle
-
+import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.SearchActivity.Companion.CHECKED_TRACK
 
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 class LibraryActivity : AppCompatActivity() {
 
     // Интерактивные элементы экрана
     private val backButton by lazy { findViewById<ImageView>(R.id.backFromLibrary) }
+    private val play by lazy { findViewById<ImageView>(R.id.play_button)}
     private val trackNameView: TextView by lazy { findViewById<TextView>(R.id.track_name_library) }
+    private val playingTrackTime: TextView by lazy { findViewById<TextView>(R.id.playing_track_time) }
     private val artistNameView: TextView by lazy { findViewById<TextView>(R.id.artist_name_library) }
     private val trackTimeView: TextView by lazy { findViewById<TextView>(R.id.duration_data) }
     private val albumImageView: ImageView by lazy { findViewById<ImageView>(R.id.track_image_library) }
@@ -38,40 +42,64 @@ class LibraryActivity : AppCompatActivity() {
     private val primaryGenreTextView: TextView by lazy { findViewById<TextView>(R.id.genre_text) }
     private val countryTextView: TextView by lazy { findViewById<TextView>(R.id.country_text) }
 
+    private var mediaPlayer = MediaPlayer()
+    private var playerState = STATE_DEFAULT
+
     private  var checkedTrack: Track? = null
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val playingProgressRunnable = Runnable { displayTime() }
+
+    private var  currentPosition = 0L
+    private var isPlaying:Boolean = false
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(CHECKED_TRACK, checkedTrack)
+        currentPosition =  mediaPlayer.getCurrentPosition().toLong()
+        outState.putLong("currentPosition", mediaPlayer.getCurrentPosition().toLong())
+        isPlaying = mediaPlayer.isPlaying()
+        // Сохраняем состояние проигрывателя (например, true - воспроизведение, false - пауза)
+        if (playerState == STATE_PLAYING){
+            outState.putBoolean("isPlaying", true)
+        }
+        else {outState.putBoolean("isPlaying", false)}
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         checkedTrack = savedInstanceState.getParcelable(CHECKED_TRACK)!!
+        currentPosition = savedInstanceState.getLong("currentPosition")
+        isPlaying = savedInstanceState.getBoolean("isPlaying")
+
     }
 
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
-        var  sharedPrefs: SharedPreferences =  getSharedPreferences(CHECKED_TRACK, MODE_PRIVATE)
+        var sharedPrefs: SharedPreferences = getSharedPreferences(CHECKED_TRACK, MODE_PRIVATE)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_library)
         if (savedInstanceState != null) {
             this.onRestoreInstanceState(savedInstanceState)
         }
-        checkedTrack=intent.getParcelableExtra<Track>(CHECKED_TRACK)
-        if (checkedTrack==null){
 
-            val json:String? = if (sharedPrefs==null) null else sharedPrefs.getString(CHECKED_TRACK, "")
+
+        // Получаем данные о треке из intent (с активити поиска) или  из sharedPreferences,
+        // если поиска еще не было в текущей сессии
+        checkedTrack = intent.getParcelableExtra<Track>(CHECKED_TRACK)
+        if (checkedTrack == null) {
+            val json: String? =
+                if (sharedPrefs == null) null else sharedPrefs.getString(CHECKED_TRACK, "")
             if (!json.isNullOrEmpty()) {
-                checkedTrack = Gson().fromJson(json, object : TypeToken<Track>() {}.type )
+                checkedTrack = Gson().fromJson(json, object : TypeToken<Track>() {}.type)
             }
         }
-
+        // Возврат в предыдущую активити
         backButton.setOnClickListener {
-            if (checkedTrack!=null){
-                var json:String?=Gson().toJson(checkedTrack)
+            if (checkedTrack != null) {
+                var json: String? = Gson().toJson(checkedTrack)
                 sharedPrefs.edit()
                     .remove(CHECKED_TRACK)
                     .putString(CHECKED_TRACK, json)
@@ -80,6 +108,7 @@ class LibraryActivity : AppCompatActivity() {
             this.finish()
         }
 
+        // Отрисовываем  экран с данными о треке
         trackNameView.text = checkedTrack?.trackName ?: ""
         artistNameView.text = checkedTrack?.artistName ?: ""
         trackTimeView.text = checkedTrack?.trackTime ?: ""
@@ -92,45 +121,69 @@ class LibraryActivity : AppCompatActivity() {
             .transform(RoundedCorners(dpToPixel(8f)))
             .into(albumImageView)
         if (checkedTrack?.collectionName.isNullOrEmpty()) {
-            collectionNameView.visibility= View.GONE
-            collectionTextView.visibility= View.GONE
-        }
-        else {
+            collectionNameView.visibility = View.GONE
+            collectionTextView.visibility = View.GONE
+        } else {
             collectionNameView.text = checkedTrack?.collectionName
-            collectionTextView.visibility= View.VISIBLE
+            collectionTextView.visibility = View.VISIBLE
         }
+
         if (checkedTrack?.releaseDate.isNullOrEmpty()) {
-            releaseDateView.visibility= View.GONE
-            releaseTextView.visibility= View.GONE
-        }
-        else {
+            releaseDateView.visibility = View.GONE
+            releaseTextView.visibility = View.GONE
+        } else {
             releaseDateView.text = checkedTrack?.releaseDate
-            releaseTextView.visibility= View.VISIBLE
+            releaseTextView.visibility = View.VISIBLE
         }
-
-        // primaryGenreNameView.text = checkedTrack?.primaryGenreName
-
-       // countryView.text = checkedTrack?.country
 
         if (checkedTrack?.primaryGenreName.isNullOrEmpty()) {
-            primaryGenreNameView.visibility= View.GONE
-            primaryGenreTextView.visibility= View.GONE
-        }
-        else {
+            primaryGenreNameView.visibility = View.GONE
+            primaryGenreTextView.visibility = View.GONE
+        } else {
             primaryGenreNameView.text = checkedTrack?.primaryGenreName
-            primaryGenreTextView.visibility= View.VISIBLE
+            primaryGenreTextView.visibility = View.VISIBLE
         }
+
         if (checkedTrack?.country.isNullOrEmpty()) {
-            countryView.visibility= View.GONE
-            countryTextView.visibility= View.GONE
-        }
-        else {
+            countryView.visibility = View.GONE
+            countryTextView.visibility = View.GONE
+        } else {
             countryView.text = checkedTrack?.country
-            countryTextView.visibility= View.VISIBLE
+            countryTextView.visibility = View.VISIBLE
         }
 
+        // Воспроизводим трек
+        // смотрим, не было ли события приостановки воспроизведения
+        if (savedInstanceState == null) {
+            preparePlayer()
+        }
 
+        play.setOnClickListener {
+            playbackControl()
+        }
 
+        if (currentPosition != 0L) {
+            playingTrackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+            mediaPlayer.seekTo(currentPosition.toInt())
+            if (isPlaying) {
+                handler.postDelayed(playingProgressRunnable, PLAYING_PROGRESS_DEBOUNCE_DELAY)
+                startPlayer()
+            }
+        }
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+        handler.removeCallbacks(playingProgressRunnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+        handler.removeCallbacks(playingProgressRunnable)
+        playingTrackTime.text="00:00"
     }
 
     private fun enlargeImageUrl(artworkUrl: String?): String {
@@ -143,5 +196,73 @@ class LibraryActivity : AppCompatActivity() {
             val metrics: DisplayMetrics = Resources.getSystem().getDisplayMetrics()
             val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
             return Math.round(px).toInt()
+    }
+
+    // Функции для работы с плеером
+    private fun preparePlayer() {
+        if (!checkedTrack?.previewUrl.isNullOrEmpty()) {
+            mediaPlayer.setDataSource(checkedTrack?.previewUrl)
+            mediaPlayer.prepareAsync()
+            mediaPlayer.setOnPreparedListener {
+                play.isEnabled = true
+                playerState = STATE_PREPARED
+            }
+            mediaPlayer.setOnCompletionListener {
+                if (currentPosition != 0L) {
+                    playingTrackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+                    mediaPlayer.seekTo(currentPosition.toInt())
+                    if (isPlaying) {
+                        handler.postDelayed(playingProgressRunnable, PLAYING_PROGRESS_DEBOUNCE_DELAY)
+                        startPlayer()
+                    }
+                }
+                else{
+                    play.setImageResource(R.drawable.play_button_play)
+                    playerState = STATE_PREPARED
+                    handler.removeCallbacks(playingProgressRunnable)
+                    playingTrackTime.text = "00:00"}
+            }
+        }
+    }
+    private fun startPlayer() {
+        mediaPlayer.start()
+        play.setImageResource(R.drawable.play_button_pause)
+        playerState = STATE_PLAYING
+
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        play.setImageResource(R.drawable.play_button_play)
+        playerState = STATE_PAUSED
+    }
+    private fun playbackControl() {
+
+        when(playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+                handler.removeCallbacks(playingProgressRunnable)
+            }
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+                handler.postDelayed(playingProgressRunnable, PLAYING_PROGRESS_DEBOUNCE_DELAY)
+            }
+        }
+    }
+
+    private fun displayTime(){
+        if (playerState == STATE_PLAYING){
+            currentPosition = mediaPlayer.getCurrentPosition().toLong()
+            playingTrackTime.text=SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+            handler.postDelayed(playingProgressRunnable, PLAYING_PROGRESS_DEBOUNCE_DELAY)
+        }
+    }
+
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+        private const val PLAYING_PROGRESS_DEBOUNCE_DELAY = 500L
     }
 }
