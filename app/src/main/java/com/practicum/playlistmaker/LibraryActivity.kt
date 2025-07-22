@@ -18,7 +18,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.SearchActivity.Companion.CHECKED_TRACK
-
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -42,7 +41,7 @@ class LibraryActivity : AppCompatActivity() {
     private val primaryGenreTextView: TextView by lazy { findViewById<TextView>(R.id.genre_text) }
     private val countryTextView: TextView by lazy { findViewById<TextView>(R.id.country_text) }
 
-    private var mediaPlayer = MediaPlayer()
+    private var mediaPlayer = MediaPlayer() //здесь состояние Idle
     private var playerState = STATE_DEFAULT
 
     private  var checkedTrack: Track? = null
@@ -50,27 +49,17 @@ class LibraryActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val playingProgressRunnable = Runnable { displayTime() }
 
-    private var  currentPosition = 0L
-    private var isPlaying:Boolean = false
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(CHECKED_TRACK, checkedTrack)
-        currentPosition =  mediaPlayer.getCurrentPosition().toLong()
-        outState.putLong("currentPosition", mediaPlayer.getCurrentPosition().toLong())
-        isPlaying = mediaPlayer.isPlaying()
-        // Сохраняем состояние проигрывателя (например, true - воспроизведение, false - пауза)
-        if (playerState == STATE_PLAYING){
-            outState.putBoolean("isPlaying", true)
-        }
-        else {outState.putBoolean("isPlaying", false)}
+
+
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         checkedTrack = savedInstanceState.getParcelable(CHECKED_TRACK)!!
-        currentPosition = savedInstanceState.getLong("currentPosition")
-        isPlaying = savedInstanceState.getBoolean("isPlaying")
+
 
     }
 
@@ -153,30 +142,15 @@ class LibraryActivity : AppCompatActivity() {
         }
 
         // Воспроизводим трек
-        // смотрим, не было ли события приостановки воспроизведения
-        if (savedInstanceState == null) {
-            preparePlayer()
-        }
-
+        preparePlayer()
         play.setOnClickListener {
             playbackControl()
         }
-
-        if (currentPosition != 0L) {
-            playingTrackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
-            mediaPlayer.seekTo(currentPosition.toInt())
-            if (isPlaying) {
-                handler.postDelayed(playingProgressRunnable, PLAYING_PROGRESS_DEBOUNCE_DELAY)
-                startPlayer()
-            }
-        }
-
     }
 
     override fun onPause() {
         super.onPause()
         pausePlayer()
-        handler.removeCallbacks(playingProgressRunnable)
     }
 
     override fun onDestroy() {
@@ -200,35 +174,29 @@ class LibraryActivity : AppCompatActivity() {
 
     // Функции для работы с плеером
     private fun preparePlayer() {
+
         if (!checkedTrack?.previewUrl.isNullOrEmpty()) {
-            mediaPlayer.setDataSource(checkedTrack?.previewUrl)
-            mediaPlayer.prepareAsync()
+            mediaPlayer.setDataSource(checkedTrack?.previewUrl) //здесь состояние Initialized
+            mediaPlayer.prepareAsync() //здесь состояние Prepared
             mediaPlayer.setOnPreparedListener {
                 play.isEnabled = true
                 playerState = STATE_PREPARED
             }
+
             mediaPlayer.setOnCompletionListener {
-                if (currentPosition != 0L) {
-                    playingTrackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
-                    mediaPlayer.seekTo(currentPosition.toInt())
-                    if (isPlaying) {
-                        handler.postDelayed(playingProgressRunnable, PLAYING_PROGRESS_DEBOUNCE_DELAY)
-                        startPlayer()
-                    }
-                }
-                else{
                     play.setImageResource(R.drawable.play_button_play)
                     playerState = STATE_PREPARED
                     handler.removeCallbacks(playingProgressRunnable)
-                    playingTrackTime.text = "00:00"}
+                    playingTrackTime.text = "00:00"
+                    mediaPlayer.seekTo(0)
             }
+
         }
     }
     private fun startPlayer() {
-        mediaPlayer.start()
+        mediaPlayer.start() //здесь состояние Started
         play.setImageResource(R.drawable.play_button_pause)
         playerState = STATE_PLAYING
-
     }
 
     private fun pausePlayer() {
@@ -252,7 +220,7 @@ class LibraryActivity : AppCompatActivity() {
 
     private fun displayTime(){
         if (playerState == STATE_PLAYING){
-            currentPosition = mediaPlayer.getCurrentPosition().toLong()
+            val currentPosition = mediaPlayer.getCurrentPosition().toLong()
             playingTrackTime.text=SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
             handler.postDelayed(playingProgressRunnable, PLAYING_PROGRESS_DEBOUNCE_DELAY)
         }
