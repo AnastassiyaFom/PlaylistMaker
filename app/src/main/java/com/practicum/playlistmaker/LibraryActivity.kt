@@ -41,7 +41,7 @@ class LibraryActivity : AppCompatActivity() {
     private val primaryGenreTextView: TextView by lazy { findViewById<TextView>(R.id.genre_text) }
     private val countryTextView: TextView by lazy { findViewById<TextView>(R.id.country_text) }
 
-    private var mediaPlayer = MediaPlayer() //здесь состояние Idle
+    private var mediaPlayer = MediaPlayer()
     private var playerState = STATE_DEFAULT
 
     private  var checkedTrack: Track? = null
@@ -176,8 +176,8 @@ class LibraryActivity : AppCompatActivity() {
     private fun preparePlayer() {
 
         if (!checkedTrack?.previewUrl.isNullOrEmpty()) {
-            mediaPlayer.setDataSource(checkedTrack?.previewUrl) //здесь состояние Initialized
-            mediaPlayer.prepareAsync() //здесь состояние Prepared
+            mediaPlayer.setDataSource(checkedTrack?.previewUrl)
+            mediaPlayer.prepareAsync()
             mediaPlayer.setOnPreparedListener {
                 play.isEnabled = true
                 playerState = STATE_PREPARED
@@ -194,7 +194,7 @@ class LibraryActivity : AppCompatActivity() {
         }
     }
     private fun startPlayer() {
-        mediaPlayer.start() //здесь состояние Started
+        mediaPlayer.start()
         play.setImageResource(R.drawable.play_button_pause)
         playerState = STATE_PLAYING
     }

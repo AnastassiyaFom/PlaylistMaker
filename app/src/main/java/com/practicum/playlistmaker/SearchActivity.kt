@@ -164,35 +164,11 @@ class SearchActivity : AppCompatActivity() {
 
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
-
-        // Автоматизируйте выполнение запроса при помощи debounce.
-        // Реализуйте эту логику по аналогии с рассмотренным примером в предыдущей теме.
-
-
-
-
-/*
-        inputEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                // ВЫПОЛНЯЙТЕ ПОИСКОВЫЙ ЗАПРОС ЗДЕСЬ
-                true
-                if (inputEditText.text.isNotEmpty()) {
-                    searchHistoryView.visibility=View.GONE
-                    trackSearchApiService.searchTrack(inputEditText.text.toString())
-                        .enqueue(callback)
-                }
-            }
-            false
-
-        }
-*/
         inputEditText.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus && inputEditText.text.isEmpty() && tracksHistory.tracksInHistory.isNotEmpty())
                 searchHistoryView.visibility=View.VISIBLE
             else searchHistoryView.visibility=View.GONE
         }
-
-
 
         recycler.adapter = TracksAdapter(tracks, object:OnItemClickListener{
             override fun onItemClick(position: Int) {
@@ -271,7 +247,6 @@ class SearchActivity : AppCompatActivity() {
 
         override fun onFailure(call: Call<TracksSearchResponse>, t: Throwable) {
             // Не смогли соединиться с сервером
-
             tracks.clear()
             recycler.adapter?.notifyDataSetChanged()
             t.printStackTrace()
@@ -296,8 +271,6 @@ class SearchActivity : AppCompatActivity() {
 
     private fun toLibrary(item:Track) {
         val intent = Intent(this, LibraryActivity::class.java)
-        // для передачи всего списка в проигрыватель, задел на будущее
-        // intent.putExtra(HISTORY_TRACKS_LIST, tracksHistory.getTracksFromHistory() as Array<Track>)
         intent.putExtra(CHECKED_TRACK, item)
         this.onPause()
         startActivity(intent)
