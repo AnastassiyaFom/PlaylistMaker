@@ -20,4 +20,5 @@
     <color name="refresh_button_text">#1A1B22</color>
     <color name="refresh_button_tint">#FFFFFF</color>
     <color name="button_library">#FFFFFFFF</color>
+    <color name="progress_bar">#3772E7</color>
 </resources>
