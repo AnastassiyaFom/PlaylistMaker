@@ -1,15 +1,16 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.data.dto
 
 
 import android.os.Parcel
 import android.os.Parcelable
-import java.io.Serializable
+import com.practicum.playlistmaker.domain.models.Track
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-data class Track(
+data class TrackDto(
     val trackId:Int,
     val trackName: String,
     val artistName: String,
-    var trackTime: String,
     val trackTimeMillis:Long,
     val artworkUrl100: String,
     val collectionName:String,
@@ -17,13 +18,15 @@ data class Track(
     val primaryGenreName:String,
     val country:String,
     val previewUrl:String
-): Parcelable{
+)
+
+
+    /*: Parcelable{
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readLong(),
+         parcel.readLong()?: 0L,
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
@@ -31,11 +34,11 @@ data class Track(
         parcel.readString() ?: "",
         parcel.readString() ?: ""
     )
+
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(trackId)
         parcel.writeString(trackName)
         parcel.writeString(artistName)
-        parcel.writeString(trackTime)
         parcel.writeLong(trackTimeMillis)
         parcel.writeString(artworkUrl100)
         parcel.writeString(collectionName)
@@ -49,13 +52,15 @@ data class Track(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Track> {
-        override fun createFromParcel(parcel: Parcel): Track {
-            return Track(parcel)
+    companion object CREATOR : Parcelable.Creator<TrackDto> {
+        override fun createFromParcel(parcel: Parcel): TrackDto {
+            return TrackDto(parcel)
         }
 
-        override fun newArray(size: Int): Array<Track?> {
+        override fun newArray(size: Int): Array<TrackDto?> {
             return arrayOfNulls(size)
         }
     }
+
 }
+*/

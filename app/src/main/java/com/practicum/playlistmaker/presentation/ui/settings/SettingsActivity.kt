@@ -1,16 +1,16 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.settings
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.presentation.ui.main.MainActivity
 
 
 class SettingsActivity : AppCompatActivity() {

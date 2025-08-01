@@ -1,10 +1,10 @@
-package com.practicum.playlistmaker
-
+package com.practicum.playlistmaker.presentation.ui.search
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.SearchActivity.Companion.TRACKS_HISTORY_PREFERENCES
+import com.practicum.playlistmaker.domain.models.Track
+
 
 class SearchHistory (var sharedPrefs: SharedPreferences){
 
@@ -14,9 +14,9 @@ class SearchHistory (var sharedPrefs: SharedPreferences){
 
     init{
         loadHistory()
-       // sharedPrefs.registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
-            // логика
-       // }
+        // sharedPrefs.registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
+        // логика
+        // }
     }
 
     private fun loadHistory(){
@@ -37,8 +37,8 @@ class SearchHistory (var sharedPrefs: SharedPreferences){
     fun clearHistory(){
         tracksInHistory.clear()
         sharedPrefs.edit()
-                   .remove(TRACKS_HISTORY)
-                   .apply()
+            .remove(TRACKS_HISTORY)
+            .apply()
     }
 
     fun getTracksFromHistory(): MutableList<Track>{

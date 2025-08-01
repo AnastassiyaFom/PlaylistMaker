@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.library
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
@@ -17,7 +17,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.SearchActivity.Companion.CHECKED_TRACK
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.presentation.ui.search.SearchActivity.Companion.CHECKED_TRACK
+import com.practicum.playlistmaker.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
