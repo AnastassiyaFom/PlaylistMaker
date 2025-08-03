@@ -20,16 +20,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.Creator.getTrackHistoryRepository
-
+import com.practicum.playlistmaker.Creator.provideTrackHistoryInteractor
 import com.practicum.playlistmaker.Creator.provideTracksInteractor
 import com.practicum.playlistmaker.R
-
-
-// !!!!!!!!!!!!!!!!!!!!!! Не нужно ли здесь сделать не напрямую к интерфейсу взаимодействие, а через интерактор????
-import com.practicum.playlistmaker.domain.api.TracksHistoryRepository
-
-import com.practicum.playlistmaker.domain.api.TracksInteractor
+import com.practicum.playlistmaker.domain.interfaces.interactors.TracksHistoryInteractor
+import com.practicum.playlistmaker.domain.interfaces.interactors.TracksInteractor
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.presentation.ui.library.LibraryActivity
 import com.practicum.playlistmaker.presentation.ui.main.MainActivity
@@ -58,9 +53,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistoryView: ViewGroup
     private lateinit var progressBarView: ProgressBar
 
-
     private var tracks : MutableList<Track> = mutableListOf()
-    private lateinit var tracksHistory: TracksHistoryRepository
+    private lateinit var tracksHistory: TracksHistoryInteractor
 
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -84,7 +78,7 @@ class SearchActivity : AppCompatActivity() {
             this.onRestoreInstanceState(savedInstanceState)
         }
 
-        tracksHistory = getTrackHistoryRepository(this)
+        tracksHistory = provideTrackHistoryInteractor(this)
 
         backButton = findViewById<ImageView>(R.id.backToMainFromSearch)
         inputEditText = findViewById<EditText>(R.id.inputEditText)
@@ -238,7 +232,7 @@ class SearchActivity : AppCompatActivity() {
             noInternetView.visibility = View.GONE
             trackNotFound.visibility = View.GONE
             progressBarView.visibility = View.VISIBLE
-            val tracksInteractor:TracksInteractor = provideTracksInteractor()
+            val tracksInteractor: TracksInteractor = provideTracksInteractor()
             tracksInteractor.searchTracks(inputEditText.text.toString(), consumer)
         }
     }

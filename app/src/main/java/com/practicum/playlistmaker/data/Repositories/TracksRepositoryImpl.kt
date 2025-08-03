@@ -4,7 +4,7 @@ import android.icu.text.SimpleDateFormat
 import com.practicum.playlistmaker.data.NetworkClient
 import com.practicum.playlistmaker.data.dto.TracksSearchRequest
 import com.practicum.playlistmaker.data.dto.TracksSearchResponse
-import com.practicum.playlistmaker.domain.api.TracksRepository
+import com.practicum.playlistmaker.domain.interfaces.repositories.TracksRepository
 import com.practicum.playlistmaker.domain.models.Track
 
 import java.util.Locale

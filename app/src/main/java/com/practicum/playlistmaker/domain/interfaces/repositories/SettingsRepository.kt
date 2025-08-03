@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.domain.api
+package com.practicum.playlistmaker.domain.interfaces.repositories
 
 import android.content.Context
 

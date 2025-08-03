@@ -1,20 +1,30 @@
 package com.practicum.playlistmaker
-/*
+
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlistmaker.Creator.getSettingsRepository
+
+
+import com.practicum.playlistmaker.domain.interfaces.interactors.SettingsInteractor
+
+import com.practicum.playlistmaker.Creator.provideSettingsInteractor
 
 open class App : Application() {
 
     private var darkTheme = false
 
-    private var settingsRepository = getSettingsRepository(this)
+    private lateinit var settingsRepository: SettingsInteractor
     override fun onCreate() {
+
         super.onCreate()
-        if (settingsRepository!=null) {
+
+        settingsRepository = provideSettingsInteractor(this)
+
+      if (settingsRepository!=null) {
             darkTheme = settingsRepository.getSavedDarkThemeFlag()
             switchTheme(darkTheme)
         }
+
+
     }
     fun getDarkThemeFlag():Boolean{
         return darkTheme
@@ -29,16 +39,15 @@ open class App : Application() {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
-        settingsRepository.saveThemeMode(darkTheme)
+       settingsRepository.saveThemeMode(darkTheme)
     }
 
 }
-*/
 
+/*
 
-import android.app.Application
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatDelegate
+
 
 class App : Application() {
     val DARK_THEME_PREFERENCES = "Dark Theme Preferences"
@@ -70,3 +79,7 @@ class App : Application() {
     }
 
 }
+
+
+
+ */

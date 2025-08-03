@@ -1,13 +1,12 @@
-package com.practicum.playlistmaker.domain.api
+package com.practicum.playlistmaker.domain.interfaces.interactors
 
 import com.practicum.playlistmaker.domain.models.Track
 
-interface TracksHistoryRepository {
+interface TracksHistoryInteractor  {
 
-    fun loadHistory()
+
     fun getTracksFromHistory(): MutableList<Track>
     fun getTracksInHistoryMaxLength(): Int
-    fun refrashHistoryInRepository()
     fun clearHistory()
     fun addTrackToHistory(track: Track)
 }
