@@ -11,9 +11,5 @@ object RetrofitClient {
             .build()
 
     val trackSearchApiService = retrofit.create(TrackSearchApi::class.java)
-/*
-    val trackSearchApiService:RetrofitApi by lazy {
-        retrofit.create(TrackSearchApi::class.java)
-    }
- */
+
 }

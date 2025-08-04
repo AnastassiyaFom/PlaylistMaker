@@ -44,7 +44,7 @@ object Creator {
     fun provideSettingsInteractor(context: Context): SettingsInteractor {
         return  SettingsInteractorImpl(getSettingsRepository(context))
     }
-    /*
+
 
     private fun getLastCheckedTrackRepository(context: Context): LastCheckedTrackRepository {
         return LastCheckedTrackRepositorySharedPrefImpl(context)
@@ -54,5 +54,5 @@ object Creator {
     }
 
 
- */
+
 }

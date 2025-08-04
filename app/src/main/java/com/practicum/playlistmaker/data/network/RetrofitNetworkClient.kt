@@ -1,15 +1,10 @@
 package com.practicum.playlistmaker.data.network
 
-import android.view.View
+
 import com.practicum.playlistmaker.data.NetworkClient
 import com.practicum.playlistmaker.data.dto.Response
 import com.practicum.playlistmaker.data.dto.TracksSearchRequest
-import com.practicum.playlistmaker.data.dto.TracksSearchResponse
-import com.practicum.playlistmaker.domain.models.Track
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+
 
 class RetrofitNetworkClient : NetworkClient {
 

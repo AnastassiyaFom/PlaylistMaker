@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 
 import com.practicum.playlistmaker.domain.interfaces.repositories.SettingsRepository
 
-class SettingsRepositoryImpl (override val context : Context) : SettingsRepository {
+class SettingsRepositoryImpl ( val context : Context) : SettingsRepository {
 
     val DARK_THEME_PREFERENCES = "Dark Theme Preferences"
     val DARK_THEME_ENABLE = "Dark Theme Is Enable"

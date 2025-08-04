@@ -7,12 +7,17 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.domain.interfaces.repositories.LastCheckedTrackRepository
 import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.presentation.ui.search.SearchActivity.Companion.CHECKED_TRACK
 
-class LastCheckedTrackRepositorySharedPrefImpl(override val context: Context):
+class LastCheckedTrackRepositorySharedPrefImpl(val context: Context):
     LastCheckedTrackRepository {
-
-    private var sharedPrefs: SharedPreferences = context.getSharedPreferences(CHECKED_TRACK, MODE_PRIVATE)
+   private  val CHECKED_TRACK="CHECKED_TRACK"
+   private lateinit var  sharedPrefs: SharedPreferences
+    init {
+        try {
+            sharedPrefs =  context.getSharedPreferences (CHECKED_TRACK, MODE_PRIVATE)
+        }
+        catch(e: Exception){}
+    }
 
     override fun getLastCheckedTrack():Track? {
         var track:Track? = null
@@ -25,12 +30,10 @@ class LastCheckedTrackRepositorySharedPrefImpl(override val context: Context):
     }
 
     override fun saveLastCheckedTrack(track:Track) {
-       // if (track != null) {
-            var json: String? = Gson().toJson(track)
+            val json: String? = Gson().toJson(track)
             sharedPrefs.edit()
                 .remove(CHECKED_TRACK)
                 .putString(CHECKED_TRACK, json)
                 .apply()
-       // }
     }
 }

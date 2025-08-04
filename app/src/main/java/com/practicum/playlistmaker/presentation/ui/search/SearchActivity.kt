@@ -54,7 +54,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBarView: ProgressBar
 
     private var tracks : MutableList<Track> = mutableListOf()
-    private lateinit var tracksHistory: TracksHistoryInteractor
+    private lateinit var tracksHistoryInteractor: TracksHistoryInteractor
 
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -78,7 +78,7 @@ class SearchActivity : AppCompatActivity() {
             this.onRestoreInstanceState(savedInstanceState)
         }
 
-        tracksHistory = provideTrackHistoryInteractor(this)
+        tracksHistoryInteractor = provideTrackHistoryInteractor(this)
 
         backButton = findViewById<ImageView>(R.id.backToMainFromSearch)
         inputEditText = findViewById<EditText>(R.id.inputEditText)
@@ -93,7 +93,7 @@ class SearchActivity : AppCompatActivity() {
         progressBarView=findViewById<ProgressBar>(R.id.progressBar)
 
         deleteTracksHistoryButton.setOnClickListener {
-            tracksHistory.clearHistory()
+            tracksHistoryInteractor.clearHistory()
             historyRecycler.adapter?.notifyDataSetChanged()
             searchHistoryView.visibility=View.GONE
         }
@@ -132,7 +132,7 @@ class SearchActivity : AppCompatActivity() {
            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                if (s.isNullOrEmpty()) {
                    clearButton.visibility = clearButtonVisibility(s)
-                   if (inputEditText.hasFocus() && tracksHistory.getTracksFromHistory().isNotEmpty())
+                   if (inputEditText.hasFocus() && tracksHistoryInteractor.getTracksFromHistory().isNotEmpty())
                        searchHistoryView.visibility=View.VISIBLE
                    else searchHistoryView.visibility=View.GONE
 
@@ -151,7 +151,7 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
         inputEditText.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus && inputEditText.text.isEmpty() && tracksHistory.getTracksFromHistory().isNotEmpty())
+            if (hasFocus && inputEditText.text.isEmpty() && tracksHistoryInteractor.getTracksFromHistory().isNotEmpty())
                 searchHistoryView.visibility=View.VISIBLE
             else searchHistoryView.visibility=View.GONE
         }
@@ -160,8 +160,8 @@ class SearchActivity : AppCompatActivity() {
             override fun onItemClick(position: Int) {
                 //Для предотвращения двойных нажатий на элемент
                 if (clickDebounce()){
-                    tracksHistory.addTrackToHistory(tracks[position])
-                    historyRecycler.adapter?.notifyItemRemoved(tracksHistory.getTracksInHistoryMaxLength()-1)
+                    tracksHistoryInteractor.addTrackToHistory(tracks[position])
+                    historyRecycler.adapter?.notifyItemRemoved(tracksHistoryInteractor.getTracksInHistoryMaxLength()-1)
                     historyRecycler.adapter?.notifyItemInserted(0)
                     toLibrary(tracks[position])
                 }
@@ -169,11 +169,11 @@ class SearchActivity : AppCompatActivity() {
         })
         recycler.layoutManager = LinearLayoutManager(this)
 
-        historyRecycler.adapter = TracksAdapter(tracksHistory.getTracksFromHistory(), object:
+        historyRecycler.adapter = TracksAdapter(tracksHistoryInteractor.getTracksFromHistory(), object:
             OnItemClickListener {
             override fun onItemClick(position: Int) {
                 if (clickDebounce()) {
-                    toLibrary(tracksHistory.getTracksFromHistory()[position])
+                    toLibrary(tracksHistoryInteractor.getTracksFromHistory()[position])
                 }
             }
         })
