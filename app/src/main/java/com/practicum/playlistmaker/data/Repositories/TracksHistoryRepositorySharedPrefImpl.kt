@@ -13,7 +13,7 @@ import com.practicum.playlistmaker.domain.models.Track
 class TracksHistoryRepositorySharedPrefImpl(var context: Context): TracksHistoryRepository {
     override val tracksInHistoryMaxLength: Int = 10
     override var tracksInHistory: MutableList<Track>
-    private val TRACKS_HISTORY = "Tracks History"
+
     private val  sharedPrefs: SharedPreferences = context.getSharedPreferences("Tracks History Preferences", MODE_PRIVATE)
 
     init{
@@ -52,6 +52,9 @@ class TracksHistoryRepositorySharedPrefImpl(var context: Context): TracksHistory
 
     private fun createTracksListFromJson(json: String): MutableList<Track> {
         return Gson().fromJson(json, object : TypeToken<MutableList<Track>>() {}.type )
+    }
+    companion object{
+        private const val TRACKS_HISTORY = "Tracks History"
     }
 }
 

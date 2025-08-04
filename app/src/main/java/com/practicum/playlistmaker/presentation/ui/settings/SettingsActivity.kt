@@ -65,7 +65,6 @@ class SettingsActivity : AppCompatActivity() {
             val openlink = Intent(Intent.ACTION_VIEW, address)
             startActivity(openlink)
         }
-
     }
 
 

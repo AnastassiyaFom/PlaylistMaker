@@ -4,12 +4,10 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 
-import com.practicum.playlistmaker.domain.interfaces.repositories.SettingsRepository
+import com.practicum.playlistmaker.domain.interfaces.repositories.DarkThemeRepository
 
-class SettingsRepositoryImpl ( val context : Context) : SettingsRepository {
+class DarkThemeRepositoryImpl (val context : Context) : DarkThemeRepository {
 
-    val DARK_THEME_PREFERENCES = "Dark Theme Preferences"
-    val DARK_THEME_ENABLE = "Dark Theme Is Enable"
     private lateinit var sharedPrefs: SharedPreferences
     init {
         try{
@@ -26,6 +24,10 @@ class SettingsRepositoryImpl ( val context : Context) : SettingsRepository {
         sharedPrefs.edit()
             .putBoolean(DARK_THEME_ENABLE, darkTheme)
             .apply()
+    }
+    companion object{
+        private const val  DARK_THEME_PREFERENCES = "Dark Theme Preferences"
+        private const val DARK_THEME_ENABLE = "Dark Theme Is Enable"
     }
 
 }

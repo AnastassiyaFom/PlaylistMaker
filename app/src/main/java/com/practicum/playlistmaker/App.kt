@@ -4,15 +4,15 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 
 
-import com.practicum.playlistmaker.domain.interfaces.interactors.SettingsInteractor
+import com.practicum.playlistmaker.domain.interfaces.interactors.DarkThemeInteractor
 
 import com.practicum.playlistmaker.Creator.provideSettingsInteractor
 
-open class App : Application() {
+class App : Application() {
 
     private var darkTheme = false
 
-    private lateinit var settingsInteractor: SettingsInteractor
+    private lateinit var settingsInteractor: DarkThemeInteractor
     override fun onCreate() {
 
         super.onCreate()

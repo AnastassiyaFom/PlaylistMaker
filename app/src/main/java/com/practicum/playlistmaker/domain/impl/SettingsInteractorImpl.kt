@@ -1,10 +1,10 @@
 package com.practicum.playlistmaker.domain.impl
 
-import com.practicum.playlistmaker.domain.interfaces.interactors.SettingsInteractor
-import com.practicum.playlistmaker.domain.interfaces.repositories.SettingsRepository
+import com.practicum.playlistmaker.domain.interfaces.interactors.DarkThemeInteractor
+import com.practicum.playlistmaker.domain.interfaces.repositories.DarkThemeRepository
 
 
-class SettingsInteractorImpl(private var settings: SettingsRepository): SettingsInteractor {
+class SettingsInteractorImpl(private var settings: DarkThemeRepository): DarkThemeInteractor {
     override fun getSavedDarkThemeFlag() : Boolean {
         return settings.getSavedDarkThemeFlag()
     }

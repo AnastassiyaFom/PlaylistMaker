@@ -14,7 +14,7 @@ class TracksRepositoryImpl (private val networkClient: NetworkClient): TracksRep
     override fun searchTracks(expression: String): List<Track> {
         val response = networkClient.doRequest(TracksSearchRequest(expression))
         resultCode = response.resultCode
-        if (response.resultCode == 200) {
+        if (response.resultCode >= 200 && response.resultCode < 300) {
             return (response as TracksSearchResponse).results.map {
                 Track(
                     trackId = it.trackId,

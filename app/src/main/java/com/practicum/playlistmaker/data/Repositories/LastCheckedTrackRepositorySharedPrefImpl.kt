@@ -10,7 +10,8 @@ import com.practicum.playlistmaker.domain.models.Track
 
 class LastCheckedTrackRepositorySharedPrefImpl(val context: Context):
     LastCheckedTrackRepository {
-   private  val CHECKED_TRACK="CHECKED_TRACK"
+
+    private val gson = Gson()
    private lateinit var  sharedPrefs: SharedPreferences
     init {
         try {
@@ -24,16 +25,19 @@ class LastCheckedTrackRepositorySharedPrefImpl(val context: Context):
         val json: String? =
             if (sharedPrefs == null) null else sharedPrefs.getString(CHECKED_TRACK, "")
          if (!json.isNullOrEmpty()) {
-             track = Gson().fromJson(json, object : TypeToken<Track>() {}.type)
+             track = gson.fromJson(json, object : TypeToken<Track>() {}.type)
         }
         return track
     }
 
     override fun saveLastCheckedTrack(track:Track) {
-            val json: String? = Gson().toJson(track)
+            val json: String? = gson.toJson(track)
             sharedPrefs.edit()
                 .remove(CHECKED_TRACK)
                 .putString(CHECKED_TRACK, json)
                 .apply()
+    }
+    companion object{
+        private   const val CHECKED_TRACK = "CHECKED_TRACK"
     }
 }

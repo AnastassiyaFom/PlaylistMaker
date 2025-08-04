@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.domain.interfaces.repositories
 
-interface SettingsRepository {
+interface DarkThemeRepository {
 
     fun getSavedDarkThemeFlag() : Boolean
     fun saveThemeMode(darkTheme:Boolean)
