@@ -9,7 +9,9 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.Creator.provideSettingsInteractor
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.interfaces.interactors.SettingsInteractor
 import com.practicum.playlistmaker.presentation.ui.main.MainActivity
 
 
@@ -27,6 +29,7 @@ class SettingsActivity : AppCompatActivity() {
             this.finish()
         }
 
+        var settingsInteractor: SettingsInteractor = provideSettingsInteractor(this)
         // Темная тема
         val themeSwitcher = findViewById<Switch>(R.id.themeSwitcher)
         themeSwitcher.setChecked((applicationContext as App).getDarkThemeFlag())
@@ -49,20 +52,17 @@ class SettingsActivity : AppCompatActivity() {
         val textToSupport = findViewById<TextView>(R.id.textToSupport)
         textToSupport.setOnClickListener {
             val textToSupportIntent = Intent(Intent.ACTION_SENDTO)
-            val message: String = getResources().getString(R.string.support_message)
-            val subject: String = getResources().getString(R.string.support_mail_subject)
             textToSupportIntent.data = Uri.parse("mailto:")
-            textToSupportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getResources().getString(R.string.support_mail_adress)))
-            textToSupportIntent.putExtra(Intent.EXTRA_TEXT, message)
-            textToSupportIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
+            textToSupportIntent.putExtra(Intent.EXTRA_EMAIL, settingsInteractor.getSupportMailAdress())
+            textToSupportIntent.putExtra(Intent.EXTRA_TEXT, settingsInteractor.getSupportMessage() )
+            textToSupportIntent.putExtra(Intent.EXTRA_SUBJECT, settingsInteractor.getSupportMailSubject())
             startActivity(textToSupportIntent)
         }
 
         // Пользовательское соглашение
         val userAgreement = findViewById<TextView>(R.id.userAgreement)
         userAgreement.setOnClickListener {
-            val address: Uri = Uri.parse(getResources().getString(R.string.user_agreement_link))
-            val openlink = Intent(Intent.ACTION_VIEW, address)
+            val openlink = Intent(Intent.ACTION_VIEW, Uri.parse(settingsInteractor.getUserAgreementLink()))
             startActivity(openlink)
         }
     }

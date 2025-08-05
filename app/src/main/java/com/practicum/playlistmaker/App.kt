@@ -2,25 +2,22 @@ package com.practicum.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-
-
-import com.practicum.playlistmaker.domain.interfaces.interactors.DarkThemeInteractor
-
 import com.practicum.playlistmaker.Creator.provideSettingsInteractor
+import com.practicum.playlistmaker.domain.interfaces.interactors.SettingsInteractor
 
 class App : Application() {
 
     private var darkTheme = false
 
-    private lateinit var settingsInteractor: DarkThemeInteractor
+    private lateinit var settingsInteractor: SettingsInteractor
     override fun onCreate() {
 
-        super.onCreate()
+      super.onCreate()
 
-        settingsInteractor = provideSettingsInteractor(this)
+      settingsInteractor = provideSettingsInteractor(this)
 
       if (settingsInteractor!=null) {
-            darkTheme = settingsInteractor.getSavedDarkThemeFlag()
+            darkTheme = settingsInteractor.getDarkThemeFlag()
             switchTheme(darkTheme)
         }
 
