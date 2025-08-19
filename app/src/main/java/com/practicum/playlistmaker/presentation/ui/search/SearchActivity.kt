@@ -206,7 +206,7 @@ class SearchActivity : AppCompatActivity() {
             handler.post { trackNotFound.visibility = View.GONE}
             handler.post { progressBarView.visibility = View.GONE}
             // Получили ответ от сервера
-            if (resultCode == 200 && foundTracks.isNotEmpty() == true && foundTracks != null) {
+            if (resultCode >= 200 && resultCode<300 && foundTracks.isNotEmpty() == true && foundTracks != null) {
                 // Наш запрос был удачным, получаем ответ в JSON-тексте
                 tracks.clear()
                 tracks.addAll(foundTracks)
