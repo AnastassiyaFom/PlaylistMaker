@@ -10,6 +10,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.creator.Creator.provideLastCheckedTrackInteractor
@@ -25,16 +26,16 @@ class LibraryActivity : AppCompatActivity() {
 
     // Интерактивные элементы экрана
     private lateinit var binding: ActivityLibraryBinding
-
-    private var mediaPlayer = MediaPlayer()
-    private var playerState = PlayerState.STATE_DEFAULT
+    private lateinit var mediaPlayerViewModel : PlayerViewModel
+    //private var mediaPlayer = MediaPlayer()
+    //private var playerState = PlayerState.STATE_DEFAULT
 
     private lateinit var  lastCheckedTrackInteractor: LastCheckedTrackInteractor
 
     private  var checkedTrack: Track? = null
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val playingProgressRunnable = Runnable { displayTime() }
+    //private val handler = Handler(Looper.getMainLooper())
+   //  private val playingProgressRunnable = Runnable { displayTime() }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -67,7 +68,19 @@ class LibraryActivity : AppCompatActivity() {
         if (checkedTrack == null) {
             checkedTrack = lastCheckedTrackInteractor.getLastCheckedTrack()
         }
+        if (checkedTrack != null && !checkedTrack?.previewUrl.isNullOrEmpty()){
+             mediaPlayerViewModel = ViewModelProvider(this, PlayerViewModel.getFactory(checkedTrack?.previewUrl!!))
+                .get(PlayerViewModel::class.java)
+            // Подписываемся на поля
+            mediaPlayerViewModel.observeProgressTime().observe(this) {
+                binding.playingTrackTime.text = it
+            }
 
+            mediaPlayerViewModel.observePlayerState().observe(this) {
+                changeButtonIcon(it == PlayerState.STATE_PLAYING)
+                enableButton(it != PlayerState.STATE_DEFAULT)
+            }
+        }
         // Возврат в предыдущую активити
         binding.backFromLibrary.setOnClickListener {
             if (checkedTrack!=null) {
@@ -77,9 +90,12 @@ class LibraryActivity : AppCompatActivity() {
         }
 
         // Отрисовываем  экран с данными о треке
-        binding.trackNameLibrary.text = checkedTrack?.trackName ?: ""
-        binding.artistNameLibrary.text = checkedTrack?.artistName ?: ""
-        binding.durationData.text = checkedTrack?.trackTime ?: ""
+        binding.apply{
+            trackNameLibrary.text = checkedTrack?.trackName ?: ""
+            artistNameLibrary.text = checkedTrack?.artistName ?: ""
+            durationData.text = checkedTrack?.trackTime ?: ""
+        }
+
 
         var artworkUrl512: String = checkedTrack?.artworkUrl500.toString()
         Glide.with(applicationContext)
@@ -121,15 +137,14 @@ class LibraryActivity : AppCompatActivity() {
         }
 
         // Воспроизводим трек
-        preparePlayer()
         binding.playButton.setOnClickListener {
-            playbackControl()
+            mediaPlayerViewModel.onPlayButtonClicked()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        pausePlayer()
+        mediaPlayerViewModel.onPause()
     }
 
     override fun onDestroy() {
@@ -137,10 +152,6 @@ class LibraryActivity : AppCompatActivity() {
             lastCheckedTrackInteractor.saveLastCheckedTrack(checkedTrack!!)
         }
         super.onDestroy()
-        mediaPlayer.release()
-        handler.removeCallbacks(playingProgressRunnable)
-        binding.playingTrackTime.text="00:00"
-
     }
 
 
@@ -149,63 +160,15 @@ class LibraryActivity : AppCompatActivity() {
             val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
             return Math.round(px).toInt()
     }
+    private fun enableButton(isEnabled: Boolean) {
+        binding.playButton.isEnabled = isEnabled
+    }
 
-    // Функции для работы с плеером
-    private fun preparePlayer() {
-
-        if (!checkedTrack?.previewUrl.isNullOrEmpty()) {
-            mediaPlayer.setDataSource(checkedTrack?.previewUrl)
-            mediaPlayer.prepareAsync()
-            mediaPlayer.setOnPreparedListener {
-                binding.playButton.isEnabled = true
-                playerState = PlayerState.STATE_PREPARED
-            }
-
-            mediaPlayer.setOnCompletionListener {
-                    binding.playButton.setImageResource(R.drawable.play_button_play)
-                    playerState = PlayerState.STATE_PREPARED
-                    handler.removeCallbacks(playingProgressRunnable)
-                    binding.playingTrackTime.text = "00:00"
-                    mediaPlayer.seekTo(0)
-            }
-
+    private fun changeButtonIcon(isPlaying: Boolean) {
+        if (isPlaying){
+            binding.playButton.setImageResource( R.drawable.play_button_pause)
+        } else {
+            binding.playButton.setImageResource(R.drawable.play_button_play)
         }
-    }
-    private fun startPlayer() {
-        mediaPlayer.start()
-        binding.playButton.setImageResource(R.drawable.play_button_pause)
-        playerState = PlayerState.STATE_PLAYING
-    }
-
-    private fun pausePlayer() {
-        mediaPlayer.pause()
-        binding.playButton.setImageResource(R.drawable.play_button_play)
-        playerState = PlayerState.STATE_PAUSED
-    }
-    private fun playbackControl() {
-
-        when (playerState) {
-            PlayerState.STATE_PLAYING -> {
-                pausePlayer()
-                handler.removeCallbacks(playingProgressRunnable)
-            }
-            PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED -> {
-                startPlayer()
-                handler.postDelayed(playingProgressRunnable, PLAYING_PROGRESS_DEBOUNCE_DELAY)
-            }
-            else->{}
-        }
-    }
-
-    private fun displayTime(){
-        if (playerState == PlayerState.STATE_PLAYING){
-            val currentPosition = mediaPlayer.getCurrentPosition().toLong()
-            binding.playingTrackTime.text= SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
-            handler.postDelayed(playingProgressRunnable, PLAYING_PROGRESS_DEBOUNCE_DELAY)
-        }
-    }
-
-    companion object {
-        private const val PLAYING_PROGRESS_DEBOUNCE_DELAY = 500L
     }
 }
