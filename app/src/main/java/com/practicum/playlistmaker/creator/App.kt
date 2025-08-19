@@ -1,8 +1,8 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.creator
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlistmaker.Creator.provideSettingsInteractor
+import com.practicum.playlistmaker.creator.Creator.provideSettingsInteractor
 import com.practicum.playlistmaker.domain.interfaces.interactors.SettingsInteractor
 
 class App : Application() {

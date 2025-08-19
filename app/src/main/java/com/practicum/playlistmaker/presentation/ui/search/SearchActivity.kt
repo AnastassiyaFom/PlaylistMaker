@@ -9,20 +9,13 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.Creator.provideTrackHistoryInteractor
-import com.practicum.playlistmaker.Creator.provideTracksInteractor
-import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.creator.Creator.provideTrackHistoryInteractor
+import com.practicum.playlistmaker.creator.Creator.provideTracksInteractor
+import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.domain.interfaces.interactors.TracksHistoryInteractor
 import com.practicum.playlistmaker.domain.interfaces.interactors.TracksInteractor
 import com.practicum.playlistmaker.domain.models.Track
@@ -35,23 +28,11 @@ import com.practicum.playlistmaker.presentation.ui.main.MainActivity
 class SearchActivity : AppCompatActivity() {
     private var searchRequest:String?=null
 
+    private lateinit var binding: ActivitySearchBinding
     //Вспомагательные переменные для debouncer
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { searchRequestToNet() }
-
-    // Интерактивные элементы экрана
-    private lateinit var backButton : ImageView
-    private lateinit var inputEditText: EditText
-    private lateinit var clearButton : ImageView
-    private lateinit var recycler: RecyclerView
-    private lateinit var historyRecycler: RecyclerView
-    private lateinit var noInternetView: ViewGroup
-    private lateinit var refrashButton: Button
-    private lateinit var trackNotFound: TextView
-    private lateinit var deleteTracksHistoryButton: Button
-    private lateinit var searchHistoryView: ViewGroup
-    private lateinit var progressBarView: ProgressBar
 
     private var tracks : MutableList<Track> = mutableListOf()
     private lateinit var tracksHistoryInteractor: TracksHistoryInteractor
@@ -73,55 +54,44 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_search)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         if (savedInstanceState != null) {
             this.onRestoreInstanceState(savedInstanceState)
         }
 
         tracksHistoryInteractor = provideTrackHistoryInteractor(this)
-
-        backButton = findViewById<ImageView>(R.id.backToMainFromSearch)
-        inputEditText = findViewById<EditText>(R.id.inputEditText)
-        clearButton = findViewById<ImageView>(R.id.clearSearch)
-        recycler = findViewById<RecyclerView>(R.id.tracksList)
-        historyRecycler = findViewById<RecyclerView>(R.id.tracksHistoryList)
-        noInternetView = findViewById<ViewGroup>(R.id.error_no_internet)
-        refrashButton = findViewById<Button>(R.id.refrash_button)
-        trackNotFound = findViewById<TextView>(R.id.error_track_not_found)
-        deleteTracksHistoryButton = findViewById<Button>(R.id.clear_history)
-        searchHistoryView= findViewById<ViewGroup>(R.id.search_history)
-        progressBarView=findViewById<ProgressBar>(R.id.progressBar)
-
-        deleteTracksHistoryButton.setOnClickListener {
+        binding.clearHistory.setOnClickListener {
             tracksHistoryInteractor.clearHistory()
-            historyRecycler.adapter?.notifyDataSetChanged()
-            searchHistoryView.visibility=View.GONE
+            binding.tracksHistoryList.adapter?.notifyDataSetChanged()
+            binding.searchHistory.visibility=View.GONE
         }
 
-        refrashButton.setOnClickListener {
+        binding.refrashButton.setOnClickListener {
             searchRequestToNet()
         }
 
-       backButton.setOnClickListener {
+        binding.backToMainFromSearch.setOnClickListener {
             val butBackClickListener = Intent(this, MainActivity::class.java)
             butBackClickListener.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             this.finish()
         }
 
-       clearButton.setOnClickListener {
-           inputEditText.setText("")
-           trackNotFound.visibility = View.GONE
-           noInternetView.visibility = View.GONE
-           tracks.clear()
-           recycler.adapter?.notifyDataSetChanged()
-           this.currentFocus?.let { view ->
+        binding.clearSearch.setOnClickListener {
+            binding.inputEditText.setText("")
+            binding.errorTrackNotFound.visibility = View.GONE
+            binding.errorNoInternet.visibility = View.GONE
+            tracks.clear()
+            binding.tracksList.adapter?.notifyDataSetChanged()
+            this.currentFocus?.let { view ->
                val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
                imm?.hideSoftInputFromWindow(view.windowToken, 0)
-           }
+            }
        }
 
         if (searchRequest!=null) {
-            inputEditText.setText(searchRequest)
+            binding.inputEditText.setText(searchRequest)
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -131,16 +101,16 @@ class SearchActivity : AppCompatActivity() {
            }
            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                if (s.isNullOrEmpty()) {
-                   clearButton.visibility = clearButtonVisibility(s)
-                   if (inputEditText.hasFocus() && tracksHistoryInteractor.getTracksFromHistory().isNotEmpty())
-                       searchHistoryView.visibility=View.VISIBLE
-                   else searchHistoryView.visibility=View.GONE
+                   binding.clearSearch.visibility = clearButtonVisibility(s)
+                   if ( binding.inputEditText.hasFocus() && tracksHistoryInteractor.getTracksFromHistory().isNotEmpty())
+                       binding.searchHistory.visibility=View.VISIBLE
+                   else  binding.searchHistory.visibility=View.GONE
 
                } else {
                    searchRequest = s.toString()
                    searchDebounce()
                }
-               clearButton.visibility = clearButtonVisibility(s)
+               binding.clearSearch.visibility = clearButtonVisibility(s)
            }
            override fun afterTextChanged(s: Editable?) {
                // empty
@@ -148,28 +118,28 @@ class SearchActivity : AppCompatActivity() {
            }
        }
 
-        inputEditText.addTextChangedListener(simpleTextWatcher)
+        binding.inputEditText.addTextChangedListener(simpleTextWatcher)
 
-        inputEditText.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus && inputEditText.text.isEmpty() && tracksHistoryInteractor.getTracksFromHistory().isNotEmpty())
-                searchHistoryView.visibility=View.VISIBLE
-            else searchHistoryView.visibility=View.GONE
+        binding.inputEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus &&  binding.inputEditText.text.isEmpty() && tracksHistoryInteractor.getTracksFromHistory().isNotEmpty())
+                binding.searchHistory.visibility=View.VISIBLE
+            else  binding.searchHistory.visibility=View.GONE
         }
 
-        recycler.adapter = TracksAdapter(tracks, object: OnItemClickListener {
+        binding.tracksList.adapter = TracksAdapter(tracks, object: OnItemClickListener {
             override fun onItemClick(position: Int) {
                 //Для предотвращения двойных нажатий на элемент
                 if (clickDebounce()){
                     tracksHistoryInteractor.addTrackToHistory(tracks[position])
-                    historyRecycler.adapter?.notifyItemRemoved(tracksHistoryInteractor.getTracksInHistoryMaxLength()-1)
-                    historyRecycler.adapter?.notifyItemInserted(0)
+                    binding.tracksHistoryList.adapter?.notifyItemRemoved(tracksHistoryInteractor.getTracksInHistoryMaxLength()-1)
+                    binding.tracksHistoryList.adapter?.notifyItemInserted(0)
                     toLibrary(tracks[position])
                 }
             }
         })
-        recycler.layoutManager = LinearLayoutManager(this)
+        binding.tracksList.layoutManager = LinearLayoutManager(this)
 
-        historyRecycler.adapter = TracksAdapter(tracksHistoryInteractor.getTracksFromHistory(), object:
+        binding.tracksHistoryList.adapter = TracksAdapter(tracksHistoryInteractor.getTracksFromHistory(), object:
             OnItemClickListener {
             override fun onItemClick(position: Int) {
                 if (clickDebounce()) {
@@ -177,7 +147,7 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
         })
-        historyRecycler.layoutManager = LinearLayoutManager(this)
+        binding.tracksHistoryList.layoutManager = LinearLayoutManager(this)
     }
 
 
@@ -202,38 +172,38 @@ class SearchActivity : AppCompatActivity() {
     //!!!!!!!!!!!!!!!!!!!!! Как то смущает здесь могократный вызов handler.post
     private val consumer = object : TracksInteractor.TracksConsumer {
         override fun consume(foundTracks: List<Track>, resultCode: Int) {
-            handler.post { noInternetView.visibility = View.GONE}
-            handler.post { trackNotFound.visibility = View.GONE}
-            handler.post { progressBarView.visibility = View.GONE}
+            handler.post {  binding.errorNoInternet.visibility = View.GONE}
+            handler.post {  binding.errorTrackNotFound.visibility = View.GONE}
+            handler.post {  binding.progressBar.visibility = View.GONE}
             // Получили ответ от сервера
             if (resultCode >= 200 && resultCode<300 && foundTracks.isNotEmpty() == true && foundTracks != null) {
                 // Наш запрос был удачным, получаем ответ в JSON-тексте
                 tracks.clear()
                 tracks.addAll(foundTracks)
-                handler.post { recycler.adapter?.notifyDataSetChanged() }
+                handler.post {  binding.tracksList.adapter?.notifyDataSetChanged() }
             }
             else {
                 tracks.clear()
-                handler.post { recycler.adapter?.notifyDataSetChanged()}
+                handler.post {  binding.tracksList.adapter?.notifyDataSetChanged()}
                 if (resultCode == 400) {
                     // показываем, что нет инета
-                    handler.post { noInternetView.visibility = View.VISIBLE}
+                    handler.post {  binding.errorNoInternet.visibility = View.VISIBLE}
                 } else {
                     // показываем, что ничего не найдено
-                    handler.post { trackNotFound.visibility = View.VISIBLE}
+                    handler.post {  binding.errorTrackNotFound.visibility = View.VISIBLE}
                 }
             }
         }
     }
 
     private fun searchRequestToNet(){
-        if (inputEditText.text.isNotEmpty()) {
-           searchHistoryView.visibility=View.GONE
-            noInternetView.visibility = View.GONE
-            trackNotFound.visibility = View.GONE
-            progressBarView.visibility = View.VISIBLE
+        if ( binding.inputEditText.text.isNotEmpty()) {
+            binding.searchHistory.visibility=View.GONE
+            binding.errorNoInternet.visibility = View.GONE
+            binding.errorTrackNotFound.visibility = View.GONE
+            binding.progressBar.visibility = View.VISIBLE
             val tracksInteractor: TracksInteractor = provideTracksInteractor()
-            tracksInteractor.searchTracks(inputEditText.text.toString(), consumer)
+            tracksInteractor.searchTracks( binding.inputEditText.text.toString(), consumer)
         }
     }
 

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.creator
 
 import android.content.Context
 import com.practicum.playlistmaker.data.Repositories.LastCheckedTrackRepositorySharedPrefImpl
