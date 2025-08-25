@@ -2,11 +2,9 @@ package com.practicum.playlistmaker.domain.interfaces.repositories
 
 import com.practicum.playlistmaker.domain.models.Track
 
-interface TracksHistoryRepository {
-    var tracksInHistory:MutableList<Track>
+interface SearchHistoryRepository {
     val tracksInHistoryMaxLength: Int
-
-    fun refrashHistoryInRepository()
+    fun writeDataToRepository(data:MutableList<Track>)
     fun clearHistory()
-    fun loadHistory(): MutableList<Track>
+    fun getTracksFromHistory():MutableList<Track>
 }

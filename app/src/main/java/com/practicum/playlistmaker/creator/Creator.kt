@@ -1,15 +1,17 @@
 package com.practicum.playlistmaker.creator
 
 import android.content.Context
+import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.data.Repositories.LastCheckedTrackRepositorySharedPrefImpl
 import com.practicum.playlistmaker.data.Repositories.SettingsRepositoryImpl
-import com.practicum.playlistmaker.data.Repositories.TracksHistoryRepositorySharedPrefImpl
+import com.practicum.playlistmaker.data.Repositories.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.data.Repositories.TracksRepositoryImpl
 import com.practicum.playlistmaker.data.network.RetrofitNetworkClient
+import com.practicum.playlistmaker.data.storage.PrefsStorageClient
 import com.practicum.playlistmaker.domain.impl.LastCheckedTrackInteractorImpl
 import com.practicum.playlistmaker.domain.impl.SettingsInteractorImpl
 import com.practicum.playlistmaker.domain.interfaces.interactors.TracksHistoryInteractor
-import com.practicum.playlistmaker.domain.interfaces.repositories.TracksHistoryRepository
+import com.practicum.playlistmaker.domain.interfaces.repositories.SearchHistoryRepository
 import com.practicum.playlistmaker.domain.interfaces.interactors.TracksInteractor
 import com.practicum.playlistmaker.domain.interfaces.repositories.TracksRepository
 import com.practicum.playlistmaker.domain.impl.TracksHistoryRepositoryImpl
@@ -18,6 +20,7 @@ import com.practicum.playlistmaker.domain.interfaces.interactors.LastCheckedTrac
 import com.practicum.playlistmaker.domain.interfaces.interactors.SettingsInteractor
 import com.practicum.playlistmaker.domain.interfaces.repositories.LastCheckedTrackRepository
 import com.practicum.playlistmaker.domain.interfaces.repositories.SettingsRepository
+import com.practicum.playlistmaker.domain.models.Track
 
 object Creator {
     private fun getTracksRepository(): TracksRepository {
@@ -29,13 +32,23 @@ object Creator {
     }
 
 
-    private fun getTrackHistoryRepository(context: Context): TracksHistoryRepository {
-        return TracksHistoryRepositorySharedPrefImpl(context)
+    private fun getTrackHistoryRepository(context: Context): SearchHistoryRepository {
+        return SearchHistoryRepositoryImpl(
+            PrefsStorageClient<MutableList<Track>>(
+            context,
+            "Tracks History",
+            object : TypeToken<MutableList<Track>>() {}.type)
+        )
     }
 
     fun provideTrackHistoryInteractor(context: Context): TracksHistoryInteractor {
         return TracksHistoryRepositoryImpl(getTrackHistoryRepository(context))
     }
+
+
+
+
+
 
     private fun getSettingsRepository(context: Context): SettingsRepository {
         return SettingsRepositoryImpl(context)
