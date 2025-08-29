@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.practicum.playlistmaker"
-        minSdk = 29
+        minSdk = 31
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -54,8 +54,9 @@ dependencies {
     implementation("com.google.android.material:material:1.6.1")
     implementation("com.github.bumptech.glide:glide:4.14.2")
     annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
-
     implementation("com.squareup.retrofit2:retrofit:${libs.versions.retrofit.get()}")
     implementation ("com.squareup.retrofit2:converter-gson:${libs.versions.retrofit.get()}")
-
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation ("androidx.activity:activity-ktx:1.6.1")
 }

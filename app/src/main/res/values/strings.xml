@@ -22,7 +22,8 @@
     <string name="year">"Год"</string>
     <string name="genre">"Жанр"</string>
     <string name="country">"Страна"</string>
-
+    <string name="something_went_wrong">Что-то пошло не так\n</string>
+    <string name="nothing_found">Ничего не нашлось</string>
 
 
 </resources>

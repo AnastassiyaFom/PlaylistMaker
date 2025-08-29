@@ -2,25 +2,25 @@ package com.practicum.playlistmaker.creator
 
 import android.content.Context
 import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.data.Repositories.LastCheckedTrackRepositorySharedPrefImpl
-import com.practicum.playlistmaker.data.Repositories.SettingsRepositoryImpl
-import com.practicum.playlistmaker.data.Repositories.SearchHistoryRepositoryImpl
-import com.practicum.playlistmaker.data.Repositories.TracksRepositoryImpl
-import com.practicum.playlistmaker.data.network.RetrofitNetworkClient
-import com.practicum.playlistmaker.data.storage.PrefsStorageClient
-import com.practicum.playlistmaker.domain.impl.LastCheckedTrackInteractorImpl
-import com.practicum.playlistmaker.domain.impl.SettingsInteractorImpl
-import com.practicum.playlistmaker.domain.interfaces.interactors.TracksHistoryInteractor
-import com.practicum.playlistmaker.domain.interfaces.repositories.SearchHistoryRepository
-import com.practicum.playlistmaker.domain.interfaces.interactors.TracksInteractor
-import com.practicum.playlistmaker.domain.interfaces.repositories.TracksRepository
-import com.practicum.playlistmaker.domain.impl.TracksHistoryRepositoryImpl
-import com.practicum.playlistmaker.domain.impl.TracksInteractorImpl
-import com.practicum.playlistmaker.domain.interfaces.interactors.LastCheckedTrackInteractor
-import com.practicum.playlistmaker.domain.interfaces.interactors.SettingsInteractor
-import com.practicum.playlistmaker.domain.interfaces.repositories.LastCheckedTrackRepository
-import com.practicum.playlistmaker.domain.interfaces.repositories.SettingsRepository
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.player.data.LastCheckedTrackRepositorySharedPrefImpl
+import com.practicum.playlistmaker.settings.data.SettingsRepositoryImpl
+import com.practicum.playlistmaker.search.data.SearchHistoryRepositoryImpl
+import com.practicum.playlistmaker.search.data.TracksRepositoryImpl
+import com.practicum.playlistmaker.search.data.network.RetrofitNetworkClient
+import com.practicum.playlistmaker.main.data.PrefsStorageClient
+import com.practicum.playlistmaker.player.domain.LastCheckedTrackInteractorImpl
+import com.practicum.playlistmaker.settings.domain.SettingsInteractorImpl
+import com.practicum.playlistmaker.search.domain.TracksHistoryInteractor
+import com.practicum.playlistmaker.search.domain.SearchHistoryRepository
+import com.practicum.playlistmaker.search.domain.TracksInteractor
+import com.practicum.playlistmaker.search.domain.TracksRepository
+import com.practicum.playlistmaker.search.domain.TracksHistoryRepositoryImpl
+import com.practicum.playlistmaker.search.domain.TracksInteractorImpl
+import com.practicum.playlistmaker.player.domain.LastCheckedTrackInteractor
+import com.practicum.playlistmaker.settings.domain.SettingsInteractor
+import com.practicum.playlistmaker.player.domain.LastCheckedTrackRepository
+import com.practicum.playlistmaker.settings.domain.SettingsRepository
+import com.practicum.playlistmaker.search.domain.Track
 
 object Creator {
     private fun getTracksRepository(): TracksRepository {
@@ -53,7 +53,7 @@ object Creator {
     private fun getSettingsRepository(context: Context): SettingsRepository {
         return SettingsRepositoryImpl(context)
     }
-    fun provideSettingsInteractor(context: Context):SettingsInteractor {
+    fun provideSettingsInteractor(context: Context): SettingsInteractor {
         return  SettingsInteractorImpl(getSettingsRepository(context))
     }
 
