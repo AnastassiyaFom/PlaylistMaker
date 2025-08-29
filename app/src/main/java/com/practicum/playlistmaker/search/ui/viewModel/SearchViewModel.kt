@@ -23,7 +23,7 @@ import com.practicum.playlistmaker.search.domain.TracksInteractor
 
 class SearchViewModel (private val context: Context): ViewModel() {
     private val tracksInteractor: TracksInteractor = provideTracksInteractor()
-    val tracksHistoryInteractor = provideTrackHistoryInteractor(context)
+    private val tracksHistoryInteractor = provideTrackHistoryInteractor(context)
     private val handler = Handler(Looper.getMainLooper())
 
 
@@ -103,7 +103,6 @@ class SearchViewModel (private val context: Context): ViewModel() {
         renderHistory(tracksHistoryInteractor.getTracksFromHistory())
     }
 
-
     override fun onCleared() {
             super.onCleared()
             handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
@@ -124,6 +123,10 @@ class SearchViewModel (private val context: Context): ViewModel() {
             TracksState.WaitingForRequest
         )
 
+    }
+
+    fun getTracksInHistoryMaxLength(): Int {
+        return tracksHistoryInteractor.getTracksInHistoryMaxLength()?:1
     }
 
 

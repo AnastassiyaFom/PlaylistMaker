@@ -32,36 +32,16 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var textWatcher  : TextWatcher
     private var tracks : MutableList<Track> = mutableListOf()
 
-    /*
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_REQUEST, searchRequest)
-        outState.putParcelableArrayList(TRACKS_LIST, tracks as ArrayList<Track>)
-   }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        //searchRequest = savedInstanceState.getString(SEARCH_REQUEST, SEARCH_REQUEST_DEF)
-        //tracks = savedInstanceState.getParcelableArrayList<Track>(TRACKS_LIST)!!
-    }
-
-
- */
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-/*
-        if (savedInstanceState != null) {
-            this.onRestoreInstanceState(savedInstanceState)
-        }
 
- */
         var searchRequest:String=""
         var history : MutableList<Track> = mutableListOf()
-        var historyMaxLength=viewModel?.tracksHistoryInteractor?.getTracksInHistoryMaxLength()?:1
+        var historyMaxLength=viewModel?.getTracksInHistoryMaxLength()?:1
 
         viewModel = ViewModelProvider(this, SearchViewModel.getFactory())
             .get(SearchViewModel::class.java)

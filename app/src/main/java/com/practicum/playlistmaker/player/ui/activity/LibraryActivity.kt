@@ -10,10 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.practicum.playlistmaker.creator.Creator.provideLastCheckedTrackInteractor
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityLibraryBinding
-import com.practicum.playlistmaker.player.domain.LastCheckedTrackInteractor
+import com.practicum.playlistmaker.player.ui.viewModel.LibraryViewModel
 import com.practicum.playlistmaker.search.ui.view.SearchActivity.Companion.CHECKED_TRACK
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerState
@@ -21,10 +20,9 @@ import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
 
 class LibraryActivity : AppCompatActivity() {
 
-    // Интерактивные элементы экрана
     private lateinit var binding: ActivityLibraryBinding
-    private lateinit var mediaPlayerViewModel : PlayerViewModel
-    private lateinit var  lastCheckedTrackInteractor: LastCheckedTrackInteractor
+    private  var mediaPlayerViewModel : PlayerViewModel?=null
+    private lateinit var viewModel : LibraryViewModel
     private  var checkedTrack: Track? = null
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -46,44 +44,37 @@ class LibraryActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             this.onRestoreInstanceState(savedInstanceState)
         }
-        lastCheckedTrackInteractor = provideLastCheckedTrackInteractor(this)
+        viewModel = ViewModelProvider(this, LibraryViewModel.getFactory())
+            .get(LibraryViewModel::class.java)
 
-        // Получаем данные о треке из intent (с активити поиска) или  из sharedPreferences,
-        // если поиска еще не было в текущей сессии
-        checkedTrack = intent.getParcelableExtra<Track>(CHECKED_TRACK)
-        if (checkedTrack == null) {
-            checkedTrack = lastCheckedTrackInteractor.getLastCheckedTrack()
-        }
+        checkedTrack = viewModel.loadTrack(intent)
+
         if (checkedTrack != null && !checkedTrack?.previewUrl.isNullOrEmpty()){
-             mediaPlayerViewModel = ViewModelProvider(this,
-                 PlayerViewModel.getFactory(checkedTrack?.previewUrl!!)
-             )
+            mediaPlayerViewModel = ViewModelProvider(this,
+                PlayerViewModel.getFactory(checkedTrack?.previewUrl!!)
+            )
                 .get(PlayerViewModel::class.java)
-            // Подписываемся на поля
-            mediaPlayerViewModel.observeProgressTime().observe(this) {
+
+            // Подписываемся на поля плеера
+            mediaPlayerViewModel?.observeProgressTime()?.observe(this) {
                 binding.playingTrackTime.text = it
             }
-
-            mediaPlayerViewModel.observePlayerState().observe(this) {
+            mediaPlayerViewModel?.observePlayerState()?.observe(this) {
                 changeButtonIcon(it == PlayerState.STATE_PLAYING)
                 enableButton(it != PlayerState.STATE_DEFAULT)
             }
         }
         // Возврат в предыдущую активити
         binding.backFromLibrary.setOnClickListener {
-            if (checkedTrack!=null) {
-                lastCheckedTrackInteractor.saveLastCheckedTrack(checkedTrack!!)
-            }
+            viewModel.saveTrack(checkedTrack)
             this.finish()
         }
-
         // Отрисовываем  экран с данными о треке
         binding.apply{
             trackNameLibrary.text = checkedTrack?.trackName ?: ""
             artistNameLibrary.text = checkedTrack?.artistName ?: ""
             durationData.text = checkedTrack?.trackTime ?: ""
         }
-
 
         var artworkUrl512: String = checkedTrack?.artworkUrl500.toString()
         Glide.with(applicationContext)
@@ -126,27 +117,18 @@ class LibraryActivity : AppCompatActivity() {
 
         // Воспроизводим трек
         binding.playButton.setOnClickListener {
-            mediaPlayerViewModel.onPlayButtonClicked()
+            mediaPlayerViewModel?.onPlayButtonClicked()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        mediaPlayerViewModel.onPause()
+        if (mediaPlayerViewModel!=null)  mediaPlayerViewModel?.onPause()
     }
 
     override fun onDestroy() {
-        if (checkedTrack!=null) {
-            lastCheckedTrackInteractor.saveLastCheckedTrack(checkedTrack!!)
-        }
+        viewModel.saveTrack(checkedTrack)
         super.onDestroy()
-    }
-
-
-    private fun dpToPixel(dp: Float): Int {
-            val metrics: DisplayMetrics = Resources.getSystem().getDisplayMetrics()
-            val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
-            return Math.round(px).toInt()
     }
     private fun enableButton(isEnabled: Boolean) {
         binding.playButton.isEnabled = isEnabled
@@ -158,5 +140,10 @@ class LibraryActivity : AppCompatActivity() {
         } else {
             binding.playButton.setImageResource(R.drawable.play_button_play)
         }
+    }
+    private fun dpToPixel(dp: Float): Int {
+            val metrics: DisplayMetrics = Resources.getSystem().getDisplayMetrics()
+            val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
+            return Math.round(px).toInt()
     }
 }
