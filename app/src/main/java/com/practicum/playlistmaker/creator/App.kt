@@ -20,8 +20,6 @@ class App : Application() {
             darkTheme = settingsInteractor.getDarkThemeFlag()
             switchTheme(darkTheme)
         }
-
-
     }
     fun getDarkThemeFlag():Boolean{
         return darkTheme

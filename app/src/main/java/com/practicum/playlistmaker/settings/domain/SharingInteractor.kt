@@ -5,5 +5,6 @@ interface SharingInteractor {
     fun openTerms()
     fun openSupport()
 
+
 }
 

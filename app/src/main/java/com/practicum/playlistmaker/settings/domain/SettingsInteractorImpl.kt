@@ -8,25 +8,5 @@ class SettingsInteractorImpl(private var settings: SettingsRepository): Settings
     override fun saveThemeMode(darkTheme:Boolean){
         settings.saveThemeMode(darkTheme)
     }
-    override fun getShareMessage(): String {
-        return settings.getShareMessage()
-    }
-
-    override fun getSupportMessage(): String {
-        return settings.getSupportMessage()
-    }
-
-    override fun getSupportMailSubject(): String {
-        return settings.getSupportMailSubject()
-    }
-
-    override fun getSupportMailAdress(): Array<String> {
-        return settings.getSupportMailAdress()
-    }
-
-    override fun getUserAgreementLink(): String {
-        return settings.getUserAgreementLink()
-    }
-
 
 }

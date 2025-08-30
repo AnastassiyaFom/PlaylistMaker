@@ -1,9 +1,10 @@
-package com.practicum.playlistmaker.main.data
+package com.practicum.playlistmaker.search.data
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.practicum.playlistmaker.search.domain.StorageClient
 
 import java.lang.reflect.Type
 
@@ -18,7 +19,7 @@ class PrefsStorageClient<T>(
         context.getSharedPreferences("Tracks History Preferences", MODE_PRIVATE)
 
     override fun storeData(data: T) {
-        //sharedPrefs.edit().putString(dataKey, gson.toJson(data, type)).apply()
+
         sharedPrefs.edit()
             .remove(dataKey)
             .putString(dataKey, gson.toJson(data, type))

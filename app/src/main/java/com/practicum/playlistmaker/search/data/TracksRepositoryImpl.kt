@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.search.data
 
 import android.icu.text.SimpleDateFormat
-import com.practicum.playlistmaker.main.data.NetworkClient
 import com.practicum.playlistmaker.search.data.dto.TracksSearchRequest
 import com.practicum.playlistmaker.search.data.dto.TracksSearchResponse
 import com.practicum.playlistmaker.search.domain.TracksRepository
@@ -17,17 +16,17 @@ class TracksRepositoryImpl (private val networkClient: NetworkClient): TracksRep
         if (response.resultCode >= 200 && response.resultCode < 300) {
             return (response as TracksSearchResponse).results.map {
                 Track(
-                    trackId = it.trackId,
-                    trackName = it.trackName,
-                    artistName = it.artistName,
+                    trackId = it.trackId?:0,
+                    trackName = it.trackName?:"",
+                    artistName = it.artistName?:"",
                     trackTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTimeMillis),
-                    artworkUrl100 = it.artworkUrl100,
-                    artworkUrl500 = enlargeImageUrl(it.artworkUrl100),
-                    collectionName = it.collectionName,
-                    releaseDate = it.releaseDate,
-                    primaryGenreName = it.primaryGenreName,
-                    country = it.country,
-                    previewUrl = it.previewUrl
+                    artworkUrl100 = it.artworkUrl100?:"",
+                    artworkUrl500 = enlargeImageUrl(it.artworkUrl100)?:"",
+                    collectionName = it.collectionName?:"",
+                    releaseDate = it.releaseDate?:"",
+                    primaryGenreName = it.primaryGenreName?:"",
+                    country = it.country?:"",
+                    previewUrl = it.previewUrl?:""
                 ) }
         } else {
             return emptyList()

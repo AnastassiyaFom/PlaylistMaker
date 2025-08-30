@@ -7,7 +7,7 @@ import com.practicum.playlistmaker.settings.data.SettingsRepositoryImpl
 import com.practicum.playlistmaker.search.data.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.TracksRepositoryImpl
 import com.practicum.playlistmaker.search.data.network.RetrofitNetworkClient
-import com.practicum.playlistmaker.main.data.PrefsStorageClient
+import com.practicum.playlistmaker.search.data.PrefsStorageClient
 import com.practicum.playlistmaker.player.domain.LastCheckedTrackInteractorImpl
 import com.practicum.playlistmaker.settings.domain.SettingsInteractorImpl
 import com.practicum.playlistmaker.search.domain.TracksHistoryInteractor
@@ -21,6 +21,12 @@ import com.practicum.playlistmaker.settings.domain.SettingsInteractor
 import com.practicum.playlistmaker.player.domain.LastCheckedTrackRepository
 import com.practicum.playlistmaker.settings.domain.SettingsRepository
 import com.practicum.playlistmaker.search.domain.Track
+import com.practicum.playlistmaker.settings.data.ExternalNavigatorImpl
+import com.practicum.playlistmaker.settings.data.SharingRepositoryImpl
+import com.practicum.playlistmaker.settings.domain.ExternalNavigator
+import com.practicum.playlistmaker.settings.domain.SharingInteractor
+import com.practicum.playlistmaker.settings.domain.SharingInteractorImpl
+import com.practicum.playlistmaker.settings.domain.SharingRepository
 
 object Creator {
     private fun getTracksRepository(): TracksRepository {
@@ -45,11 +51,6 @@ object Creator {
         return TracksHistoryRepositoryImpl(getTrackHistoryRepository(context))
     }
 
-
-
-
-
-
     private fun getSettingsRepository(context: Context): SettingsRepository {
         return SettingsRepositoryImpl(context)
     }
@@ -63,6 +64,17 @@ object Creator {
     }
     fun provideLastCheckedTrackInteractor(context: Context): LastCheckedTrackInteractor {
         return  LastCheckedTrackInteractorImpl(getLastCheckedTrackRepository(context))
+    }
+
+    private fun getSharingRepository(context: Context): SharingRepository {
+        return SharingRepositoryImpl(context)
+    }
+    private fun getExternalNavigator(context: Context):ExternalNavigator {
+        return ExternalNavigatorImpl(context)
+    }
+    fun provideSharingInteractor(context: Context): SharingInteractor {
+        return  SharingInteractorImpl(getSharingRepository(context),
+            getExternalNavigator(context))
     }
 
 

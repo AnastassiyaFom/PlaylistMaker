@@ -114,11 +114,7 @@ class SearchViewModel (private val context: Context): ViewModel() {
     }
 
     fun destroy() {
-     /*   renderState(
-            TracksState.Content(arrayListOf())
-        )
 
-      */
         renderState(
             TracksState.WaitingForRequest
         )
@@ -128,7 +124,6 @@ class SearchViewModel (private val context: Context): ViewModel() {
     fun getTracksInHistoryMaxLength(): Int {
         return tracksHistoryInteractor.getTracksInHistoryMaxLength()?:1
     }
-
 
     companion object {
 
