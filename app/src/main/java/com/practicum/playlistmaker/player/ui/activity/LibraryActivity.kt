@@ -44,10 +44,13 @@ class LibraryActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             this.onRestoreInstanceState(savedInstanceState)
         }
-        viewModel = ViewModelProvider(this, LibraryViewModel.getFactory())
+        viewModel = ViewModelProvider(this, LibraryViewModel.getFactory(intent))
             .get(LibraryViewModel::class.java)
 
-        checkedTrack = viewModel.loadTrack(intent)
+
+        viewModel?.observeCheckedTrack()?.observe(this) {
+            checkedTrack=it
+        }
 
         if (checkedTrack != null && !checkedTrack?.previewUrl.isNullOrEmpty()){
             mediaPlayerViewModel = ViewModelProvider(this,
@@ -66,7 +69,7 @@ class LibraryActivity : AppCompatActivity() {
         }
         // Возврат в предыдущую активити
         binding.backFromLibrary.setOnClickListener {
-            viewModel.saveTrack(checkedTrack)
+            viewModel.saveTrack()
             this.finish()
         }
         // Отрисовываем  экран с данными о треке
@@ -127,7 +130,7 @@ class LibraryActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        viewModel.saveTrack(checkedTrack)
+        viewModel.saveTrack()
         super.onDestroy()
     }
     private fun enableButton(isEnabled: Boolean) {

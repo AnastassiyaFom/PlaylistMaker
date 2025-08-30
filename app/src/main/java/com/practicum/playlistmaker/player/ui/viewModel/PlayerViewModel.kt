@@ -61,12 +61,9 @@ class PlayerViewModel(private val url: String) : ViewModel() {
             }
 
             mediaPlayer.setOnCompletionListener {
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-                // binding.playButton.setImageResource(R.drawable.play_button_play)
+
                 playerStateLiveData.postValue(PlayerState.STATE_PREPARED)
                 handler.removeCallbacks(timerRunnable)
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-               // binding.playingTrackTime.text = "00:00"
                 mediaPlayer.seekTo(0)
                 resetTimer()
             }
