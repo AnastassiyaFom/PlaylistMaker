@@ -2,7 +2,8 @@ package com.practicum.playlistmaker.player.ui.viewModel
 
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.LiveData
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,14 +14,14 @@ import com.practicum.playlistmaker.creator.App
 import com.practicum.playlistmaker.creator.Creator.provideLastCheckedTrackInteractor
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.search.ui.view.SearchActivity.Companion.CHECKED_TRACK
-import com.practicum.playlistmaker.search.ui.viewModel.TracksState
+
 
 class LibraryViewModel (private val context: Context,
     private val intent:Intent): ViewModel(){
     private var  lastCheckedTrackInteractor= provideLastCheckedTrackInteractor(context)
     private val checkedTrack = MutableLiveData<Track?>()
     fun observeCheckedTrack(): MutableLiveData<Track?> = checkedTrack
-    init{
+    fun loadTrack():Track? {
         var track:Track?
         // Получаем данные о треке из intent (с активити поиска) или  из sharedPreferences,
         // если поиска еще не было в текущей сессии
@@ -29,6 +30,7 @@ class LibraryViewModel (private val context: Context,
             track = lastCheckedTrackInteractor.getLastCheckedTrack()
         }
         checkedTrack.postValue(track)
+       return track
     }
 
     fun saveTrack(){

@@ -3,6 +3,8 @@ package com.practicum.playlistmaker.player.ui.activity
 import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.View
 import androidx.activity.enableEdgeToEdge
@@ -46,12 +48,10 @@ class LibraryActivity : AppCompatActivity() {
         }
         viewModel = ViewModelProvider(this, LibraryViewModel.getFactory(intent))
             .get(LibraryViewModel::class.java)
-
-
         viewModel?.observeCheckedTrack()?.observe(this) {
             checkedTrack=it
         }
-
+        checkedTrack=viewModel.loadTrack()
         if (checkedTrack != null && !checkedTrack?.previewUrl.isNullOrEmpty()){
             mediaPlayerViewModel = ViewModelProvider(this,
                 PlayerViewModel.getFactory(checkedTrack?.previewUrl!!)
