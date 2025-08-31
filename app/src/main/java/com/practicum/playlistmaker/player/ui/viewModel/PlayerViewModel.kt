@@ -28,7 +28,6 @@ class PlayerViewModel(private val url: String) : ViewModel() {
         if (playerStateLiveData.value == PlayerState.STATE_PLAYING) {
             startTimerUpdate()
         }
-
     }
 
     init {
@@ -116,7 +115,7 @@ class PlayerViewModel(private val url: String) : ViewModel() {
                 PlayerViewModel(trackUrl)
             }
         }
-        private const val PLAYING_PROGRESS_DEBOUNCE_DELAY = 500L
+        const val PLAYING_PROGRESS_DEBOUNCE_DELAY = 500L
     }
 
 }

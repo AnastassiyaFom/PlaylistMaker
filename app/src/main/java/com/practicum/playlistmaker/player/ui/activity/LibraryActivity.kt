@@ -3,8 +3,6 @@ package com.practicum.playlistmaker.player.ui.activity
 import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.View
 import androidx.activity.enableEdgeToEdge
@@ -57,6 +55,7 @@ class LibraryActivity : AppCompatActivity() {
                 PlayerViewModel.getFactory(checkedTrack?.previewUrl!!)
             )
                 .get(PlayerViewModel::class.java)
+
 
             // Подписываемся на поля плеера
             mediaPlayerViewModel?.observeProgressTime()?.observe(this) {
@@ -126,7 +125,7 @@ class LibraryActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        if (mediaPlayerViewModel!=null)  mediaPlayerViewModel?.onPause()
+        if (viewModel!=null)  mediaPlayerViewModel?.onPause()
     }
 
     override fun onDestroy() {

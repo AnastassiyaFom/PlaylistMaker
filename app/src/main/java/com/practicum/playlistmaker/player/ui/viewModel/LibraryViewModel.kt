@@ -2,8 +2,10 @@ package com.practicum.playlistmaker.player.ui.viewModel
 
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,8 +14,11 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.creator.App
 import com.practicum.playlistmaker.creator.Creator.provideLastCheckedTrackInteractor
+import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel.Companion.PLAYING_PROGRESS_DEBOUNCE_DELAY
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.search.ui.view.SearchActivity.Companion.CHECKED_TRACK
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 class LibraryViewModel (private val context: Context,
@@ -39,6 +44,7 @@ class LibraryViewModel (private val context: Context,
         }
 
     }
+
     companion object {
 
         fun getFactory(intent: Intent): ViewModelProvider.Factory = viewModelFactory {
