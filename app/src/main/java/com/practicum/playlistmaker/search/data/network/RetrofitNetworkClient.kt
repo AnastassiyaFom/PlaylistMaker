@@ -20,7 +20,7 @@ class RetrofitNetworkClient : NetworkClient {
             }
         }
         catch (ex:Exception) {
-            return Response().apply { resultCode = 400 }
+            return Response().apply { resultCode = 500 }
         }
     }
 
