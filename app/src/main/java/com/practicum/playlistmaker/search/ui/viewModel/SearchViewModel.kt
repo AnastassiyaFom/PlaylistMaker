@@ -45,7 +45,7 @@ class SearchViewModel (private val context: Context): ViewModel() {
                 if (foundTracks != null) {
                     tracks.addAll(foundTracks)
                 }
-                if (resultCode == 400) {
+                if (resultCode >=500||resultCode ==400) {
                     renderState(
                         TracksState.Error(ErrorType.ERROR_NO_INTERNET)
                     )
