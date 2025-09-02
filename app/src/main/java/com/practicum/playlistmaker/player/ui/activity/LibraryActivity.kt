@@ -16,12 +16,11 @@ import com.practicum.playlistmaker.player.ui.viewModel.LibraryViewModel
 import com.practicum.playlistmaker.search.ui.view.SearchActivity.Companion.CHECKED_TRACK
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerState
-import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
+
 
 class LibraryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLibraryBinding
-    private  var mediaPlayerViewModel : PlayerViewModel?=null
     private lateinit var viewModel : LibraryViewModel
     private  var checkedTrack: Track? = null
 
@@ -44,28 +43,22 @@ class LibraryActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             this.onRestoreInstanceState(savedInstanceState)
         }
-        viewModel = ViewModelProvider(this, LibraryViewModel.getFactory(intent))
+
+        viewModel = ViewModelProvider(this, LibraryViewModel.getFactory( intent.getParcelableExtra<Track>(CHECKED_TRACK)))
             .get(LibraryViewModel::class.java)
         viewModel?.observeCheckedTrack()?.observe(this) {
             checkedTrack=it
         }
-        checkedTrack=viewModel.loadTrack()
-        if (checkedTrack != null && !checkedTrack?.previewUrl.isNullOrEmpty()){
-            mediaPlayerViewModel = ViewModelProvider(this,
-                PlayerViewModel.getFactory(checkedTrack?.previewUrl!!)
-            )
-                .get(PlayerViewModel::class.java)
-
-
-            // Подписываемся на поля плеера
-            mediaPlayerViewModel?.observeProgressTime()?.observe(this) {
+        if (checkedTrack==null) checkedTrack = viewModel.loadTrack()
+        // Подписываемся на поля плеера
+        viewModel?.observeProgressTime()?.observe(this) {
                 binding.playingTrackTime.text = it
-            }
-            mediaPlayerViewModel?.observePlayerState()?.observe(this) {
+        }
+        viewModel?.observePlayerState()?.observe(this) {
                 changeButtonIcon(it == PlayerState.STATE_PLAYING)
                 enableButton(it != PlayerState.STATE_DEFAULT)
-            }
         }
+
         // Возврат в предыдущую активити
         binding.backFromLibrary.setOnClickListener {
             viewModel.saveTrack()
@@ -119,13 +112,13 @@ class LibraryActivity : AppCompatActivity() {
 
         // Воспроизводим трек
         binding.playButton.setOnClickListener {
-            mediaPlayerViewModel?.onPlayButtonClicked()
+            viewModel?.onPlayButtonClicked()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if (viewModel!=null)  mediaPlayerViewModel?.onPause()
+        if (viewModel!=null)  viewModel?.onPause()
     }
 
     override fun onDestroy() {

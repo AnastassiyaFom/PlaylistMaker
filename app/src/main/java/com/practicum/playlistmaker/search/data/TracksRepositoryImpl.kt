@@ -1,11 +1,13 @@
 package com.practicum.playlistmaker.search.data
 
+import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import com.practicum.playlistmaker.search.data.dto.TracksSearchRequest
 import com.practicum.playlistmaker.search.data.dto.TracksSearchResponse
 import com.practicum.playlistmaker.search.domain.TracksRepository
 import com.practicum.playlistmaker.search.domain.Track
+import java.util.Date
 
 import java.util.Locale
 
@@ -39,22 +41,15 @@ class TracksRepositoryImpl (private val networkClient: NetworkClient): TracksRep
         }
         return artworkUrl.toString()
     }
-    private fun extractYear(dateString: String): String {
+    @SuppressLint("SimpleDateFormat")
+    private fun extractYear(dateString: String?): String {
+        if(dateString.isNullOrEmpty()) return ""
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Укажите формат вашей даты
-        try {
-            val date = dateFormat.parse(dateString)
-            date?.let {
-                val calendar = Calendar.getInstance()
-                calendar.time = it
-                calendar[Calendar.YEAR]
-            }
-           val a= (date.getYear()+1900).toString()
-            return a
-        } catch (e: Exception) {
-            return "" // Обработка ошибки, если строка не соответствует формату
+        val parsedDate: Date? = dateFormat.parse(dateString)
+        if (parsedDate != null) {
+            val yearFormat = SimpleDateFormat("yyyy")
+            return yearFormat.format(parsedDate)
         }
-
+        return ""
     }
-
-
 }
