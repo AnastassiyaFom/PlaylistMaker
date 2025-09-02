@@ -6,7 +6,8 @@
     android:id="@+id/library"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ui.library.LibraryActivity"
+    tools:context=".player.ui.activity.LibraryActivity"
+    android:background="@color/background_not_main"
     android:orientation="vertical">
 
     <ImageView
