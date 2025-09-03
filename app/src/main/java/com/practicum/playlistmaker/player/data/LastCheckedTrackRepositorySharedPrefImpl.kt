@@ -8,18 +8,9 @@ import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.player.domain.LastCheckedTrackRepository
 import com.practicum.playlistmaker.search.domain.Track
 
-class LastCheckedTrackRepositorySharedPrefImpl(val context: Context):
-    LastCheckedTrackRepository {
-
-    private val gson = Gson()
-   private lateinit var  sharedPrefs: SharedPreferences
-    init {
-        try {
-            sharedPrefs =  context.getSharedPreferences (CHECKED_TRACK, MODE_PRIVATE)
-        }
-        catch(e: Exception){}
-    }
-
+class LastCheckedTrackRepositorySharedPrefImpl( private val gson:Gson,
+                                                private  var  sharedPrefs: SharedPreferences
+): LastCheckedTrackRepository {
     override fun getLastCheckedTrack(): Track? {
         var track: Track? = null
         val json: String? =
@@ -37,7 +28,8 @@ class LastCheckedTrackRepositorySharedPrefImpl(val context: Context):
                 .putString(CHECKED_TRACK, json)
                 .apply()
     }
-    companion object{
+   companion object{
         private   const val CHECKED_TRACK = "CHECKED_TRACK"
     }
+
 }

@@ -7,7 +7,6 @@ import android.util.DisplayMetrics
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
@@ -16,12 +15,14 @@ import com.practicum.playlistmaker.player.ui.viewModel.LibraryViewModel
 import com.practicum.playlistmaker.search.ui.view.SearchActivity.Companion.CHECKED_TRACK
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerState
+import org.koin.android.ext.android.inject
+import org.koin.java.KoinJavaComponent.inject
 
 
 class LibraryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLibraryBinding
-    private lateinit var viewModel : LibraryViewModel
+    private val viewModel : LibraryViewModel by inject()
     private  var checkedTrack: Track? = null
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -44,12 +45,10 @@ class LibraryActivity : AppCompatActivity() {
             this.onRestoreInstanceState(savedInstanceState)
         }
 
-        viewModel = ViewModelProvider(this, LibraryViewModel.getFactory( intent.getParcelableExtra<Track>(CHECKED_TRACK)))
-            .get(LibraryViewModel::class.java)
         viewModel?.observeCheckedTrack()?.observe(this) {
             checkedTrack=it
         }
-        if (checkedTrack==null) checkedTrack = viewModel.loadTrack()
+        checkedTrack=viewModel.loadTrack(intent.getParcelableExtra<Track>(CHECKED_TRACK))
         // Подписываемся на поля плеера
         viewModel?.observeProgressTime()?.observe(this) {
                 binding.playingTrackTime.text = it

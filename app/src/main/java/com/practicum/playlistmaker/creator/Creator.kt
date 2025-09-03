@@ -40,12 +40,6 @@ object Creator {
     }
 
 
-    private fun getLastCheckedTrackRepository(context: Context): LastCheckedTrackRepository {
-        return LastCheckedTrackRepositorySharedPrefImpl(context)
-    }
-    fun provideLastCheckedTrackInteractor(context: Context): LastCheckedTrackInteractor {
-        return  LastCheckedTrackInteractorImpl(getLastCheckedTrackRepository(context))
-    }
 
     private fun getSharingRepository(context: Context): SharingRepository {
         return SharingRepositoryImpl(context)

@@ -1,28 +1,22 @@
 package com.practicum.playlistmaker.player.ui.viewModel
 
-import android.content.Context
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.creator.App
-import com.practicum.playlistmaker.creator.Creator.provideLastCheckedTrackInteractor
+import com.practicum.playlistmaker.player.domain.LastCheckedTrackInteractor
 import com.practicum.playlistmaker.search.domain.Track
 
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class LibraryViewModel (private val context: Context,
-    private var track:Track?): ViewModel(){
-    private var  lastCheckedTrackInteractor= provideLastCheckedTrackInteractor(context)
+class LibraryViewModel (private var  lastCheckedTrackInteractor: LastCheckedTrackInteractor): ViewModel(){
+
     private val mediaPlayer = MediaPlayer()
+    private var track:Track?=null
     private val checkedTrack = MutableLiveData<Track?>()
     fun observeCheckedTrack(): MutableLiveData<Track?> = checkedTrack
 
@@ -32,10 +26,6 @@ class LibraryViewModel (private val context: Context,
     private val progressTimeLiveData = MutableLiveData("00:00")
     fun observeProgressTime(): LiveData<String> = progressTimeLiveData
 
-    init{
-        if (track==null) track=loadTrack()
-        preparePlayer()
-    }
     private val handler = Handler(Looper.getMainLooper())
     private val timerRunnable = Runnable {
         if (playerStateLiveData.value == PlayerState.STATE_PLAYING) {
@@ -45,12 +35,14 @@ class LibraryViewModel (private val context: Context,
 
     // Методы для трека
 
-    fun loadTrack():Track? {
+    fun loadTrack(trackFromIntent: Track?):Track? {
         // Получаем данные о треке, если поиска еще не было в текущей сессии
+        track=trackFromIntent
         if (track == null) {
             track = lastCheckedTrackInteractor.getLastCheckedTrack()
         }
         checkedTrack.postValue(track)
+        preparePlayer()
         return track
     }
 
@@ -137,15 +129,7 @@ class LibraryViewModel (private val context: Context,
         handler.removeCallbacks(timerRunnable)
     }
 
-
     companion object {
         const val PLAYING_PROGRESS_DEBOUNCE_DELAY = 500L
-
-        fun getFactory(track: Track?): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as App)
-                LibraryViewModel(app, track)
-            }
-        }
     }
 }

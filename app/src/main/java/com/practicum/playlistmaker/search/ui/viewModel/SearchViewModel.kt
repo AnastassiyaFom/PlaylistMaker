@@ -13,8 +13,7 @@ import com.practicum.playlistmaker.search.domain.TracksHistoryInteractor
 import com.practicum.playlistmaker.search.domain.TracksInteractor
 
 
-class SearchViewModel (private val context: Context,
-                       private val tracksInteractor: TracksInteractor,
+class SearchViewModel (private val tracksInteractor: TracksInteractor,
                        private val tracksHistoryInteractor: TracksHistoryInteractor
 ): ViewModel() {
 

@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker.di
 
+import com.practicum.playlistmaker.player.domain.LastCheckedTrackInteractor
+import com.practicum.playlistmaker.player.domain.LastCheckedTrackInteractorImpl
 import com.practicum.playlistmaker.search.domain.TracksHistoryInteractor
 import com.practicum.playlistmaker.search.domain.TracksHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.domain.TracksInteractor
@@ -14,5 +16,10 @@ val interactorModule = module {
     factory <TracksHistoryInteractor>{
         TracksHistoryRepositoryImpl(get())
     }
+
+    factory <LastCheckedTrackInteractor>{
+        LastCheckedTrackInteractorImpl(get())
+    }
+
 
 }
