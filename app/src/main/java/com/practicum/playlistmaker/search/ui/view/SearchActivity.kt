@@ -44,11 +44,6 @@ class SearchActivity() : AppCompatActivity() {
         var history : MutableList<Track> = mutableListOf()
         var historyMaxLength=viewModel?.getTracksInHistoryMaxLength()?:1
 
-        /*viewModel = ViewModelProvider(this, SearchViewModel.getFactory())
-            .get(SearchViewModel::class.java)
-
-
-         */
         viewModel?.observeState()?.observe(this) {
             render(it)
         }

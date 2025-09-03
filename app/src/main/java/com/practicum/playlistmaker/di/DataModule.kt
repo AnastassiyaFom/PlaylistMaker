@@ -1,8 +1,6 @@
 package com.practicum.playlistmaker.di
 
-import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -14,10 +12,11 @@ import com.practicum.playlistmaker.search.data.network.TrackSearchApi
 import com.practicum.playlistmaker.search.domain.StorageClient
 import com.practicum.playlistmaker.search.domain.Track
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.Qualifier
+
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.koin.dsl.single
+
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -39,17 +38,26 @@ val dataModule = module {
         androidContext().getSharedPreferences("CHECKED_TRACK", MODE_PRIVATE)
     }
 
+    single(named("checkedTrackStorageClient" )){
+        PrefsStorageClient<Track>(
+            "CHECKED_TRACK",
+            object : TypeToken<Track>() {}.type,
+            get(),
+            get(named("checkedTrackPreferences"))
+            )
+    } bind StorageClient::class
+    single (named("tracksHistoryStorageClient" )){
+        PrefsStorageClient<MutableList<Track>>(
+            "Tracks History",
+            object : TypeToken<MutableList<Track>>() {}.type,
+            get(),
+            get(named("tracksHistoryPreferences" )))
+    }bind StorageClient::class
+
     factory { Gson() }
 
     single<NetworkClient> {
         RetrofitNetworkClient(get())
     }
-single<StorageClient <MutableList<Track>>>{
-     PrefsStorageClient<MutableList<Track>>(
-         get(),
-         "Tracks History",
-         object : TypeToken<MutableList<Track>>() {}.type)
-    }
-
 
 }
