@@ -29,27 +29,8 @@ import com.practicum.playlistmaker.settings.domain.SharingInteractorImpl
 import com.practicum.playlistmaker.settings.domain.SharingRepository
 
 object Creator {
-    private fun getTracksRepository(): TracksRepository {
-        return TracksRepositoryImpl(RetrofitNetworkClient())
-    }
-
-    fun provideTracksInteractor(): TracksInteractor {
-        return TracksInteractorImpl(getTracksRepository())
-    }
 
 
-    private fun getTrackHistoryRepository(context: Context): SearchHistoryRepository {
-        return SearchHistoryRepositoryImpl(
-            PrefsStorageClient<MutableList<Track>>(
-            context,
-            "Tracks History",
-            object : TypeToken<MutableList<Track>>() {}.type)
-        )
-    }
-
-    fun provideTrackHistoryInteractor(context: Context): TracksHistoryInteractor {
-        return TracksHistoryRepositoryImpl(getTrackHistoryRepository(context))
-    }
 
     private fun getSettingsRepository(context: Context): SettingsRepository {
         return SettingsRepositoryImpl(context)

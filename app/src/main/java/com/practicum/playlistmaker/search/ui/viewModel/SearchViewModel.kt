@@ -5,28 +5,20 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-
-import com.practicum.playlistmaker.creator.App
-import com.practicum.playlistmaker.creator.Creator.provideTrackHistoryInteractor
-import com.practicum.playlistmaker.creator.Creator.provideTracksInteractor
 import com.practicum.playlistmaker.search.domain.Track
+import com.practicum.playlistmaker.search.domain.TracksHistoryInteractor
 import com.practicum.playlistmaker.search.domain.TracksInteractor
 
 
-class SearchViewModel (private val context: Context): ViewModel() {
-    private val tracksInteractor: TracksInteractor = provideTracksInteractor()
-    private val tracksHistoryInteractor = provideTrackHistoryInteractor(context)
+class SearchViewModel (private val context: Context,
+                       private val tracksInteractor: TracksInteractor,
+                       private val tracksHistoryInteractor: TracksHistoryInteractor
+): ViewModel() {
+
     private val handler = Handler(Looper.getMainLooper())
-
-
     private var latestSearchRequest:String?=null
     private val stateLiveData = MutableLiveData<TracksState>()
     fun observeState(): LiveData<TracksState> = stateLiveData
@@ -126,15 +118,8 @@ class SearchViewModel (private val context: Context): ViewModel() {
     }
 
     companion object {
-
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as App)
-                SearchViewModel(app)
-            }
-        }
     }
 
 

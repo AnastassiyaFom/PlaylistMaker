@@ -23,6 +23,14 @@ class LibraryViewModel (private val context: Context,
     private var track:Track?): ViewModel(){
     private var  lastCheckedTrackInteractor= provideLastCheckedTrackInteractor(context)
     private val mediaPlayer = MediaPlayer()
+    private val checkedTrack = MutableLiveData<Track?>()
+    fun observeCheckedTrack(): MutableLiveData<Track?> = checkedTrack
+
+    private var playerStateLiveData = MutableLiveData(PlayerState.STATE_DEFAULT)
+    fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
+
+    private val progressTimeLiveData = MutableLiveData("00:00")
+    fun observeProgressTime(): LiveData<String> = progressTimeLiveData
 
     init{
         if (track==null) track=loadTrack()
@@ -34,15 +42,6 @@ class LibraryViewModel (private val context: Context,
             startTimerUpdate()
         }
     }
-
-    private var playerStateLiveData = MutableLiveData(PlayerState.STATE_DEFAULT)
-    fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
-
-    private val progressTimeLiveData = MutableLiveData("00:00")
-    fun observeProgressTime(): LiveData<String> = progressTimeLiveData
-
-    private val checkedTrack = MutableLiveData<Track?>()
-    fun observeCheckedTrack(): MutableLiveData<Track?> = checkedTrack
 
     // Методы для трека
 
