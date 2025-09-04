@@ -37,6 +37,9 @@ val dataModule = module {
     single(named("checkedTrackPreferences" )){
         androidContext().getSharedPreferences("CHECKED_TRACK", MODE_PRIVATE)
     }
+    single(named("settingsPreferences" )){
+        androidContext().getSharedPreferences("Dark Theme Preferences", MODE_PRIVATE)
+    }
 
     single(named("checkedTrackStorageClient" )){
         PrefsStorageClient<Track>(
@@ -46,6 +49,7 @@ val dataModule = module {
             get(named("checkedTrackPreferences"))
             )
     } bind StorageClient::class
+
     single (named("tracksHistoryStorageClient" )){
         PrefsStorageClient<MutableList<Track>>(
             "Tracks History",
@@ -54,6 +58,14 @@ val dataModule = module {
             get(named("tracksHistoryPreferences" )))
     }bind StorageClient::class
 
+    single(named("settingsStorageClient" )){
+        PrefsStorageClient<Boolean>(
+            "Dark Theme Is Enable",
+            object : TypeToken<Boolean>() {}.type,
+            get(),
+            get(named("settingsPreferences"))
+        )
+    } bind StorageClient::class
     factory { Gson() }
 
     single<NetworkClient> {

@@ -6,6 +6,13 @@ import com.practicum.playlistmaker.search.data.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.TracksRepositoryImpl
 import com.practicum.playlistmaker.search.domain.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.TracksRepository
+import com.practicum.playlistmaker.settings.data.ExternalNavigatorImpl
+import com.practicum.playlistmaker.settings.data.SettingsRepositoryImpl
+import com.practicum.playlistmaker.settings.data.SharingRepositoryImpl
+import com.practicum.playlistmaker.settings.domain.ExternalNavigator
+import com.practicum.playlistmaker.settings.domain.SettingsRepository
+import com.practicum.playlistmaker.settings.domain.SharingRepository
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -22,5 +29,13 @@ val repositoryModule = module {
         LastCheckedTrackRepositorySharedPrefImpl(get(named("checkedTrackStorageClient" )) )
 
     }
-
+    factory <SettingsRepository>{
+        SettingsRepositoryImpl(get(named("settingsStorageClient")))
+    }
+    single<SharingRepository>{
+        SharingRepositoryImpl(androidContext())
+    }
+    single<ExternalNavigator>{
+        ExternalNavigatorImpl(androidContext())
+    }
 }

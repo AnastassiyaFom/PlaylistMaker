@@ -13,13 +13,7 @@ class PrefsStorageClient<T>(
     private val gson:Gson,
     private val sharedPrefs: SharedPreferences
 ) : StorageClient<T> {
-/*
-    private val gson = Gson()
-    private val sharedPrefs: SharedPreferences =
-        context.getSharedPreferences("Tracks History Preferences", MODE_PRIVATE)
 
-
- */
     override fun storeData(data: T) {
 
         sharedPrefs.edit()

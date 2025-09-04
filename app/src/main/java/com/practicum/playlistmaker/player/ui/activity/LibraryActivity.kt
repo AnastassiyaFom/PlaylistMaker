@@ -16,8 +16,6 @@ import com.practicum.playlistmaker.search.ui.view.SearchActivity.Companion.CHECK
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerState
 import org.koin.android.ext.android.inject
-import org.koin.java.KoinJavaComponent.inject
-
 
 class LibraryActivity : AppCompatActivity() {
 
