@@ -13,9 +13,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class LibraryViewModel (private var  lastCheckedTrackInteractor: LastCheckedTrackInteractor): ViewModel(){
+class LibraryViewModel (private var  lastCheckedTrackInteractor: LastCheckedTrackInteractor,
+                        private val mediaPlayer: MediaPlayer
+): ViewModel(){
 
-    private val mediaPlayer = MediaPlayer()
     private var track:Track?=null
     private val checkedTrack = MutableLiveData<Track?>()
     fun observeCheckedTrack(): MutableLiveData<Track?> = checkedTrack
