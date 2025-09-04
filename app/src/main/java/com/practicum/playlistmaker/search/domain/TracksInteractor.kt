@@ -6,5 +6,6 @@ interface TracksInteractor {
     interface TracksConsumer {
         fun consume(foundTracks: List<Track>, resultCode: Int)
     }
+
 }
 

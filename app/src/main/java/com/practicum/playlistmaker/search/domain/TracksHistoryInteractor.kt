@@ -5,10 +5,5 @@ interface TracksHistoryInteractor  {
     fun getTracksInHistoryMaxLength(): Int
     fun clearHistory()
     fun addTrackToHistory(track: Track)
-/*
-    interface HistoryConsumer {
-        fun consume(searchHistory: MutableList<Track>?)
-    }
 
- */
 }

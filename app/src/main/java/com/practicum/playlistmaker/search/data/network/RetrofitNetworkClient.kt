@@ -6,13 +6,13 @@ import com.practicum.playlistmaker.search.data.dto.Response
 import com.practicum.playlistmaker.search.data.dto.TracksSearchRequest
 
 
-class RetrofitNetworkClient : NetworkClient {
+class RetrofitNetworkClient (private val trackSearchApiService: TrackSearchApi) : NetworkClient {
 
     override fun doRequest(dto: Any): Response {
         try {
             if (dto is TracksSearchRequest) {
                 val resp =
-                    RetrofitClient.trackSearchApiService.searchTracks(dto.expression).execute()
+                    trackSearchApiService.searchTracks(dto.expression).execute()
                 val body = resp.body() ?: Response()
                 return body.apply { resultCode = resp.code() }
             } else {

@@ -12,7 +12,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.search.domain.Track
@@ -20,13 +19,14 @@ import com.practicum.playlistmaker.player.ui.activity.LibraryActivity
 import com.practicum.playlistmaker.main.ui.MainActivity
 import com.practicum.playlistmaker.search.ui.viewModel.SearchViewModel
 import com.practicum.playlistmaker.search.ui.viewModel.TracksState
+import org.koin.android.ext.android.inject
 
 
 @Suppress("DEPRECATION")
-class SearchActivity : AppCompatActivity() {
+class SearchActivity() : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchBinding
-    private var viewModel:SearchViewModel?=null
+    private val viewModel:SearchViewModel by inject()
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var textWatcher  : TextWatcher
@@ -42,9 +42,6 @@ class SearchActivity : AppCompatActivity() {
         var searchRequest:String=""
         var history : MutableList<Track> = mutableListOf()
         var historyMaxLength=viewModel?.getTracksInHistoryMaxLength()?:1
-
-        viewModel = ViewModelProvider(this, SearchViewModel.getFactory())
-            .get(SearchViewModel::class.java)
 
         viewModel?.observeState()?.observe(this) {
             render(it)

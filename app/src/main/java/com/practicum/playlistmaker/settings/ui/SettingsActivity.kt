@@ -4,11 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import com.practicum.playlistmaker.creator.App
+import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.main.ui.MainActivity
-
+import org.koin.android.ext.android.inject
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -20,8 +19,7 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val viewModel = ViewModelProvider(this, SettingsViewModel.getFactory())
-            .get(SettingsViewModel::class.java)
+        val viewModel:SettingsViewModel by inject()
 
         // Назад в главное меню
         binding.backToMainFromSettings.setOnClickListener {
