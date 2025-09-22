@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.databinding.ActivityMainBinding
+import com.practicum.playlistmaker.library.ui.activity.LibraryActivityNew
 import com.practicum.playlistmaker.search.ui.view.SearchActivity
 import com.practicum.playlistmaker.settings.ui.SettingsActivity
 import com.practicum.playlistmaker.player.ui.activity.LibraryActivity
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.search.setOnClickListener(butSearchClickListener)
         binding.library.setOnClickListener {
-            val displayLibraryActivity = Intent(this, LibraryActivity::class.java)
+            val displayLibraryActivity = Intent(this, LibraryActivityNew::class.java)
             startActivity(displayLibraryActivity)
         }
         binding.settings.setOnClickListener {
