@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_playlists"
     android:background="@color/background_not_main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+    >
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -39,4 +37,4 @@
     </FrameLayout>
 
 
-</LinearLayout>
+</ScrollView>
