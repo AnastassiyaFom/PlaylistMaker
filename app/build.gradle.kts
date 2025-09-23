@@ -60,7 +60,4 @@ dependencies {
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
     implementation (libs.androidx.activity.ktx)
     implementation (libs.koin.android)
-    implementation (libs.androidx.viewpager2)
-    implementation (libs.androidx.fragment.ktx)
-    implementation (libs.androidx.viewpager2)
 }
