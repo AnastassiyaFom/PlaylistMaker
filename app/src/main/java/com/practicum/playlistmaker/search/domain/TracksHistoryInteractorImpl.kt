@@ -1,7 +1,7 @@
 package com.practicum.playlistmaker.search.domain
 
 
-class TracksHistoryRepositoryImpl(private var searchHistoryRepository: SearchHistoryRepository):
+class TracksHistoryInteractorImpl(private var searchHistoryRepository: SearchHistoryRepository):
     TracksHistoryInteractor {
 
     override fun getTracksFromHistory(): MutableList<Track> {
