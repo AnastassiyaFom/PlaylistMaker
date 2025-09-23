@@ -103,6 +103,4 @@
     <style name="TrackDataLibrary" parent="TrackInfoLibrary">
         <item name="android:textColor">@color/text</item>
     </style>
-
-
 </resources>
