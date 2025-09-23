@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_selected_tracks"
+    android:background="@color/background_not_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/error_no_selected_tracks"
+            style="@style/ErrorsTextView"
+            android:layout_marginTop="106dp"
+            android:text="@string/no_selected_tracks"
+            app:drawableTopCompat="@drawable/error_ic_nothing_was_found"
+            android:visibility="visible"
+            />
+    </LinearLayout>
+</ScrollView>
