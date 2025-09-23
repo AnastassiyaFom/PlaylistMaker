@@ -5,6 +5,8 @@ import com.practicum.playlistmaker.player.ui.viewModel.LibraryViewModel
 import com.practicum.playlistmaker.search.ui.viewModel.SearchViewModel
 import com.practicum.playlistmaker.settings.ui.SettingsViewModel
 import org.koin.dsl.module
+import com.practicum.playlistmaker.library.ui.viewModel.PlaylistsViewModel
+import com.practicum.playlistmaker.library.ui.viewModel.SelectedTracksViewModel
 
 
 val viewModuleModule = module {
@@ -21,5 +23,11 @@ val viewModuleModule = module {
     }
     factory{
         MediaPlayer()
+    }
+    factory{
+        PlaylistsViewModel()
+    }
+    factory{
+        SelectedTracksViewModel()
     }
 }
