@@ -6,18 +6,17 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.player.domain.LastCheckedTrackInteractor
 import com.practicum.playlistmaker.search.domain.Track
 
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class LibraryViewModel (private var  lastCheckedTrackInteractor: LastCheckedTrackInteractor,
-                        private val mediaPlayer: MediaPlayer
+class PlayerViewModel ( private val mediaPlayer: MediaPlayer
 ): ViewModel(){
 
     private var track:Track?=null
+
     private val checkedTrack = MutableLiveData<Track?>()
     fun observeCheckedTrack(): MutableLiveData<Track?> = checkedTrack
 
@@ -33,28 +32,15 @@ class LibraryViewModel (private var  lastCheckedTrackInteractor: LastCheckedTrac
             startTimerUpdate()
         }
     }
-
     // Методы для трека
-
-    fun loadTrack(trackFromIntent: Track?):Track? {
-        // Получаем данные о треке, если поиска еще не было в текущей сессии
-        track=trackFromIntent
-        if (track == null) {
-            track = lastCheckedTrackInteractor.getLastCheckedTrack()
-        }
+    fun loadTrack(trackToPlay: Track?):Track? {
+        track = trackToPlay
         checkedTrack.postValue(track)
         preparePlayer()
         return track
     }
 
-    fun saveTrack(){
-        if (checkedTrack.value!=null) {
-            lastCheckedTrackInteractor.saveLastCheckedTrack(checkedTrack.value!!)
-        }
-    }
-
     // Методы для плеера
-
     override fun onCleared() {
         super.onCleared()
         mediaPlayer.release()
@@ -85,7 +71,7 @@ class LibraryViewModel (private var  lastCheckedTrackInteractor: LastCheckedTrac
                 playerStateLiveData.postValue(PlayerState.STATE_PREPARED)
                 handler.removeCallbacks(timerRunnable)
                 mediaPlayer.seekTo(0)
-                resetTimer()
+
             }
 
         }
@@ -129,6 +115,8 @@ class LibraryViewModel (private var  lastCheckedTrackInteractor: LastCheckedTrac
     private fun pauseTimer() {
         handler.removeCallbacks(timerRunnable)
     }
+
+
 
     companion object {
         const val PLAYING_PROGRESS_DEBOUNCE_DELAY = 500L

@@ -63,7 +63,7 @@
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:layout_marginLeft">12dp</item>
+
 
     </style>
 
@@ -84,6 +84,16 @@
         <item name="android:gravity">center</item>
 
     </style>
+
+    <style name="TextRegular12">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:gravity">center</item>
+
+
+    </style>
+
     <style name="LittleButton" parent="TextMedium14">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
@@ -104,4 +114,16 @@
     <style name="TrackDataLibrary" parent="TrackInfoLibrary">
         <item name="android:textColor">@color/text</item>
     </style>
+
+    <style name="bottomNavTextActive" parent="Widget.Material3.BottomNavigationView" >
+        <item name="itemTextColor">@color/item_selected</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:gravity">center</item>
+
+
+
+    </style>
+
 </resources>
