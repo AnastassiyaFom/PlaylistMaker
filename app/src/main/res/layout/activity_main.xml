@@ -35,7 +35,7 @@
         android:text="@string/Медиатека"
         style="@style/BigButtonStyle"
         app:cornerRadius="@dimen/radius"
-        app:icon="@drawable/icon_lib"
+        app:icon="@drawable/icon_library_24"
         app:iconGravity="textStart"
         app:iconPadding="@dimen/icon_padding"
         app:iconTint="@color/black" />

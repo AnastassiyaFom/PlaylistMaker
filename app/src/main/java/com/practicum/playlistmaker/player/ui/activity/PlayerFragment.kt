@@ -1,66 +1,60 @@
 package com.practicum.playlistmaker.player.ui.activity
 
-import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.view.LayoutInflater
 import android.view.View
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityLibraryBinding
-import com.practicum.playlistmaker.player.ui.viewModel.LibraryViewModel
-import com.practicum.playlistmaker.search.ui.view.SearchActivity.Companion.CHECKED_TRACK
+import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
+import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
+
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerState
 import org.koin.android.ext.android.inject
 
-class LibraryActivity : AppCompatActivity() {
+class PlayerFragment : Fragment() {
+    private var _binding: FragmentPlayerBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var binding: ActivityLibraryBinding
-    private val viewModel : LibraryViewModel by inject()
+    private val viewModel : PlayerViewModel by inject()
     private  var checkedTrack: Track? = null
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelable(CHECKED_TRACK, checkedTrack)
+
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    {
+        _binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        checkedTrack = savedInstanceState.getParcelable(CHECKED_TRACK)!!
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivityLibraryBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        if (savedInstanceState != null) {
-            this.onRestoreInstanceState(savedInstanceState)
-        }
-
-        viewModel?.observeCheckedTrack()?.observe(this) {
+        viewModel.observeCheckedTrack().observe(viewLifecycleOwner) {
             checkedTrack=it
         }
-        checkedTrack=viewModel.loadTrack(intent.getParcelableExtra<Track>(CHECKED_TRACK))
+        checkedTrack = viewModel.loadTrack(requireArguments().getParcelable(ARGS_TRACK))
+
         // Подписываемся на поля плеера
-        viewModel?.observeProgressTime()?.observe(this) {
+        viewModel.observeProgressTime().observe(viewLifecycleOwner) {
                 binding.playingTrackTime.text = it
         }
-        viewModel?.observePlayerState()?.observe(this) {
+        viewModel.observePlayerState().observe(viewLifecycleOwner) {
                 changeButtonIcon(it == PlayerState.STATE_PLAYING)
                 enableButton(it != PlayerState.STATE_DEFAULT)
         }
 
         // Возврат в предыдущую активити
         binding.backFromLibrary.setOnClickListener {
-            viewModel.saveTrack()
-            this.finish()
+            findNavController().navigateUp()
         }
+
         // Отрисовываем  экран с данными о треке
         binding.apply{
             trackNameLibrary.text = checkedTrack?.trackName ?: ""
@@ -68,8 +62,8 @@ class LibraryActivity : AppCompatActivity() {
             durationData.text = checkedTrack?.trackTime ?: ""
         }
 
-        var artworkUrl512: String = checkedTrack?.artworkUrl500.toString()
-        Glide.with(applicationContext)
+        val artworkUrl512: String = checkedTrack?.artworkUrl500.toString()
+        Glide.with(requireContext())
             .load(artworkUrl512)
             .placeholder(R.drawable.album_placeholder_512)
             .centerCrop()
@@ -115,13 +109,9 @@ class LibraryActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        if (viewModel!=null)  viewModel?.onPause()
+        viewModel.onPause()
     }
 
-    override fun onDestroy() {
-        viewModel.saveTrack()
-        super.onDestroy()
-    }
     private fun enableButton(isEnabled: Boolean) {
         binding.playButton.isEnabled = isEnabled
     }
@@ -137,5 +127,8 @@ class LibraryActivity : AppCompatActivity() {
             val metrics: DisplayMetrics = Resources.getSystem().getDisplayMetrics()
             val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
             return Math.round(px).toInt()
+    }
+    companion object {
+        const val ARGS_TRACK = "track"
     }
 }

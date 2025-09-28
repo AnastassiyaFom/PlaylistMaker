@@ -33,14 +33,10 @@ class SelectedTracksFragment : Fragment() {
         }
         return binding.root
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // реализация появится в следующем  спринте
-    }
+
 
     companion object {
         fun newInstance() =SelectedTracksFragment().apply {
-            // позже сюда будет передаваться список избранных треков
 
         }
     }
