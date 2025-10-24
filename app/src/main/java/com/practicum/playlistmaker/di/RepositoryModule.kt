@@ -1,7 +1,5 @@
 package com.practicum.playlistmaker.di
 
-import com.practicum.playlistmaker.player.data.LastCheckedTrackRepositorySharedPrefImpl
-import com.practicum.playlistmaker.player.domain.LastCheckedTrackRepository
 import com.practicum.playlistmaker.search.data.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.TracksRepositoryImpl
 import com.practicum.playlistmaker.search.domain.SearchHistoryRepository
@@ -25,10 +23,7 @@ val repositoryModule = module {
     factory<SearchHistoryRepository> {
         SearchHistoryRepositoryImpl(get(named("tracksHistoryStorageClient")))
     }
-    factory<LastCheckedTrackRepository> {
-        LastCheckedTrackRepositorySharedPrefImpl(get(named("checkedTrackStorageClient" )) )
 
-    }
     factory <SettingsRepository>{
         SettingsRepositoryImpl(get(named("settingsStorageClient")))
     }

@@ -34,9 +34,12 @@ val dataModule = module {
         androidContext()
             .getSharedPreferences("Tracks History Preferences", MODE_PRIVATE)
     }
+    /*
     single(named("checkedTrackPreferences" )){
         androidContext().getSharedPreferences("CHECKED_TRACK", MODE_PRIVATE)
     }
+
+     */
     single(named("settingsPreferences" )){
         androidContext().getSharedPreferences("Dark Theme Preferences", MODE_PRIVATE)
     }

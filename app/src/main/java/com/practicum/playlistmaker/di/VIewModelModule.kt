@@ -1,7 +1,7 @@
 package com.practicum.playlistmaker.di
 
 import android.media.MediaPlayer
-import com.practicum.playlistmaker.player.ui.viewModel.LibraryViewModel
+import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
 import com.practicum.playlistmaker.search.ui.viewModel.SearchViewModel
 import com.practicum.playlistmaker.settings.ui.SettingsViewModel
 import com.practicum.playlistmaker.library.ui.viewModel.PlaylistsViewModel
@@ -16,7 +16,7 @@ val viewModuleModule = module {
     }
 
     factory{
-        LibraryViewModel (get(),get())
+        PlayerViewModel (get())
     }
     factory{
         SettingsViewModel(get(),get())

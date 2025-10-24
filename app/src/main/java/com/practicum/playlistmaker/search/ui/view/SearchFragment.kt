@@ -1,70 +1,74 @@
 package com.practicum.playlistmaker.search.ui.view
 
-import android.annotation.SuppressLint
-import android.content.Intent
 
+
+import android.annotation.SuppressLint
+
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
+import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.Track
-import com.practicum.playlistmaker.player.ui.activity.LibraryActivity
-import com.practicum.playlistmaker.main.ui.MainActivity
 import com.practicum.playlistmaker.search.ui.viewModel.SearchViewModel
 import com.practicum.playlistmaker.search.ui.viewModel.TracksState
 import org.koin.android.ext.android.inject
 
 
 @Suppress("DEPRECATION")
-class SearchActivity() : AppCompatActivity() {
+class SearchFragment : Fragment() {
 
-    private lateinit var binding: ActivitySearchBinding
+
     private val viewModel:SearchViewModel by inject()
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var textWatcher  : TextWatcher
     private var tracks : MutableList<Track> = mutableListOf()
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
-    @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         var searchRequest:String=""
         var history : MutableList<Track> = mutableListOf()
-        var historyMaxLength=viewModel?.getTracksInHistoryMaxLength()?:1
+        var historyMaxLength=viewModel.getTracksInHistoryMaxLength()?:1
 
-        viewModel?.observeState()?.observe(this) {
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
-        viewModel?.observeHistory()?.observe(this) {
+        viewModel.observeHistory().observe(viewLifecycleOwner) {
             history.clear()
             history.addAll(it)
         }
 
         binding.clearHistory.setOnClickListener {
-            viewModel?.clearHistory()
+            viewModel.clearHistory()
             binding.tracksHistoryList.adapter?.notifyDataSetChanged()
             binding.searchHistory.visibility=View.GONE
         }
 
         binding.refrashButton.setOnClickListener {
-            viewModel?.searchDebounce(searchRequest)
-        }
-
-        binding.backToMainFromSearch.setOnClickListener {
-            val butBackClickListener = Intent(this, MainActivity::class.java)
-            butBackClickListener.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            this.finish()
+            viewModel.searchDebounce(searchRequest)
         }
 
         binding.clearSearch.setOnClickListener {
@@ -72,18 +76,17 @@ class SearchActivity() : AppCompatActivity() {
             searchRequest=""
             tracks.clear()
             binding.tracksList.adapter?.notifyDataSetChanged()
-            viewModel?.destroy()
+            viewModel.destroy()
             binding.errorTrackNotFound.visibility = View.GONE
             binding.errorNoInternet.visibility = View.GONE
-            this.currentFocus?.let { view ->
-               val imm = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+
+            requireActivity().currentFocus?.let { view:View ->
+               val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
                imm?.hideSoftInputFromWindow(view.windowToken, 0)
             }
        }
 
-        if (searchRequest!=null) {
-            binding.inputEditText.setText(searchRequest)
-        }
+        binding.inputEditText.setText(searchRequest)
 
         textWatcher =  object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -98,7 +101,7 @@ class SearchActivity() : AppCompatActivity() {
 
                } else {
                    binding.clearSearch.visibility = View.VISIBLE
-                   viewModel?.searchDebounce(searchRequest)
+                   viewModel.searchDebounce(searchRequest)
                }
            }
 
@@ -115,24 +118,24 @@ class SearchActivity() : AppCompatActivity() {
             override fun onItemClick(position: Int) {
                 //Для предотвращения двойных нажатий на элемент
                 if (clickDebounce()){
-                    viewModel?.chooseTrack(tracks[position])
+                    viewModel.chooseTrack(tracks[position])
                     binding.tracksHistoryList.adapter?.notifyItemRemoved(historyMaxLength-1)
                     binding.tracksHistoryList.adapter?.notifyItemInserted(0)
-                    toLibrary(tracks[position])
+                    toPlayer(tracks[position])
                 }
             }
         })
-        binding.tracksList.layoutManager = LinearLayoutManager(this)
+        binding.tracksList.layoutManager = LinearLayoutManager(requireContext())
 
         binding.tracksHistoryList.adapter = TracksAdapter(history, object:
             OnItemClickListener {
             override fun onItemClick(position: Int) {
                 if (clickDebounce()) {
-                    toLibrary(history[position])
+                    toPlayer(history[position])
                 }
             }
         })
-        binding.tracksHistoryList.layoutManager = LinearLayoutManager(this)
+        binding.tracksHistoryList.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun render(state: TracksState) {
@@ -168,13 +171,17 @@ class SearchActivity() : AppCompatActivity() {
     }
     fun showHistory(){
         binding.searchHistory.visibility=View.VISIBLE
+        tracks.clear()
+        binding.tracksList.adapter?.notifyDataSetChanged()
+
     }
 
-    private fun toLibrary(item: Track) {
-        val intent = Intent(this, LibraryActivity::class.java)
-        intent.putExtra(CHECKED_TRACK, item)
-        this.onPause()
-        startActivity(intent)
+    private fun toPlayer(item: Track) {
+        findNavController().navigate(
+            R.id.action_searchFragment_to_playerFragment,
+            bundleOf(PlayerFragment.ARGS_TRACK to item)
+        )
+
     }
 
     private fun clickDebounce() : Boolean {
@@ -185,15 +192,14 @@ class SearchActivity() : AppCompatActivity() {
         }
         return current
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel?.destroy()
-        textWatcher?.let { binding.inputEditText.removeTextChangedListener(it) }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.destroy()
+        textWatcher.let {  binding.inputEditText.removeTextChangedListener(it) }
     }
 
+
     companion object {
-        const val CHECKED_TRACK = "CHECKED_TRACK"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
