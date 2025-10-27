@@ -6,6 +6,7 @@ sealed interface TracksState {
 
     object Loading : TracksState
 
+
     data class Content(
         val tracks: MutableList<Track>
     ) : TracksState
