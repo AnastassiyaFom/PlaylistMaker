@@ -12,10 +12,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
-import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
-
-import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerState
+import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
+import com.practicum.playlistmaker.search.domain.Track
 import org.koin.android.ext.android.inject
 
 class PlayerFragment : Fragment() {
@@ -24,8 +23,6 @@ class PlayerFragment : Fragment() {
 
     private val viewModel : PlayerViewModel by inject()
     private  var checkedTrack: Track? = null
-
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -41,13 +38,11 @@ class PlayerFragment : Fragment() {
         }
         checkedTrack = viewModel.loadTrack(requireArguments().getParcelable(ARGS_TRACK))
 
-        // Подписываемся на поля плеера
-        viewModel.observeProgressTime().observe(viewLifecycleOwner) {
-                binding.playingTrackTime.text = it
-        }
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
-                changeButtonIcon(it == PlayerState.STATE_PLAYING)
-                enableButton(it != PlayerState.STATE_DEFAULT)
+                setButtonIcon(it.isButtonPlay)
+                enableButton(it.isPlayButtonEnabled)
+                binding.playingTrackTime.text = it.progress
+                if (!(it is PlayerState.Playing)) binding.playButton.setImageResource(R.drawable.play_button_play)
         }
 
         // Возврат в предыдущую активити
@@ -103,7 +98,7 @@ class PlayerFragment : Fragment() {
 
         // Воспроизводим трек
         binding.playButton.setOnClickListener {
-            viewModel?.onPlayButtonClicked()
+            viewModel.onPlayButtonClicked()
         }
     }
 
@@ -116,11 +111,11 @@ class PlayerFragment : Fragment() {
         binding.playButton.isEnabled = isEnabled
     }
 
-    private fun changeButtonIcon(isPlaying: Boolean) {
-        if (isPlaying){
-            binding.playButton.setImageResource( R.drawable.play_button_pause)
-        } else {
+    private fun setButtonIcon(isButtonPlay: Boolean) {
+        if (isButtonPlay){
             binding.playButton.setImageResource(R.drawable.play_button_play)
+        } else {
+            binding.playButton.setImageResource(R.drawable.play_button_pause)
         }
     }
     private fun dpToPixel(dp: Float): Int {

@@ -2,13 +2,16 @@ package com.practicum.playlistmaker.search.ui.viewModel
 
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.search.domain.TracksHistoryInteractor
 import com.practicum.playlistmaker.search.domain.TracksInteractor
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class SearchViewModel (private val tracksInteractor: TracksInteractor,
@@ -16,69 +19,69 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
 ): ViewModel() {
 
     private val handler = Handler(Looper.getMainLooper())
-    private var latestSearchRequest:String?=null
+    private var latestSearchRequest:String?=""
     private val stateLiveData = MutableLiveData<TracksState>()
     fun observeState(): LiveData<TracksState> = stateLiveData
     private val historyLiveData = MutableLiveData<MutableList<Track>>()
-
+    private var searchJob: Job? = null
     fun observeHistory(): LiveData<MutableList<Track>> = historyLiveData
 
     init {
         renderHistory(tracksHistoryInteractor.getTracksFromHistory())
+        renderState(
+            TracksState.WaitingForRequest
+        )
     }
 
-    private val consumer = object : TracksInteractor.TracksConsumer {
-        override fun consume(foundTracks: List<Track>, resultCode: Int) {//
-            handler.post {
-                val tracks = mutableListOf<Track>()
-                if (foundTracks != null) {
-                    tracks.addAll(foundTracks)
-                }
-                if (resultCode >=500){
-                    renderState(
-                        TracksState.Error(ErrorType.ERROR_NO_INTERNET)
-                    )
-                } else if (resultCode >= 200 && resultCode < 300 && foundTracks.isNotEmpty() == true && foundTracks != null) {
-                    renderState(
-                        TracksState.Content(tracks)
-                    )
-                } else {
-                    renderState(
-                        TracksState.Empty(true)
-                    )
-                }
+    private fun searchRequestToNet(newSearchText: String){
+        if (newSearchText.isEmpty()) {
+            renderState(
+                TracksState.WaitingForRequest
+            )
+        }
+        else {
+            renderState(
+                TracksState.Loading
+            )
+            viewModelScope.launch {
+                tracksInteractor
+                    .searchTracks(newSearchText)
+                    .collect { pair:Pair<List<Track>?,Int> ->
+                        val tracks = mutableListOf<Track>()
+                        if (pair.second >=500){
+                            renderState(
+                                TracksState.Error(ErrorType.ERROR_NO_INTERNET)
+                            )
+                        } else if (pair.second >= 200 && pair.second < 300 && pair.first!=null && pair.first!!.isNotEmpty()) {
+                            tracks.addAll(pair.first!!)
+                            renderState(
+                                TracksState.Content(tracks)
+                            )
+                        } else {
+                            renderState(
+                                TracksState.Empty(true)
+                            )
+                        }
+                    }
             }
 
         }
     }
-
-    private fun searchRequestToNet(newSearchText: String){
-
-        if (newSearchText.isNotEmpty()) {
-            renderState(
-                TracksState.Loading
-            )
-            tracksInteractor.searchTracks(newSearchText, consumer)
-        }
-    }
-
 
     fun searchDebounce(changedText: String) {
         if (latestSearchRequest == changedText && !(stateLiveData.value is TracksState.Error)) {
             return
         }
         this.latestSearchRequest = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
 
-        val searchRunnable = Runnable { searchRequestToNet(changedText) }
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            searchRequestToNet(changedText)
 
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+        }
     }
+
     private fun renderState(state: TracksState) {
             stateLiveData.postValue(state)
     }
@@ -103,11 +106,9 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
     }
 
     fun destroy() {
-
         renderState(
             TracksState.WaitingForRequest
         )
-
     }
 
     fun getTracksInHistoryMaxLength(): Int {
