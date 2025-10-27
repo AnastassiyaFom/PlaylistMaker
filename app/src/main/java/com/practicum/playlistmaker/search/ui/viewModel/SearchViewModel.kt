@@ -19,7 +19,7 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
 ): ViewModel() {
 
     private val handler = Handler(Looper.getMainLooper())
-    private var latestSearchRequest:String?=null
+    private var latestSearchRequest:String?=""
     private val stateLiveData = MutableLiveData<TracksState>()
     fun observeState(): LiveData<TracksState> = stateLiveData
     private val historyLiveData = MutableLiveData<MutableList<Track>>()
@@ -28,10 +28,18 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
 
     init {
         renderHistory(tracksHistoryInteractor.getTracksFromHistory())
+        renderState(
+            TracksState.WaitingForRequest
+        )
     }
 
     private fun searchRequestToNet(newSearchText: String){
-        if (newSearchText.isNotEmpty()) {
+        if (newSearchText.isEmpty()) {
+            renderState(
+                TracksState.WaitingForRequest
+            )
+        }
+        else {
             renderState(
                 TracksState.Loading
             )

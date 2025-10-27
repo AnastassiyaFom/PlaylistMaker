@@ -87,6 +87,7 @@ class PlayerViewModel ( private val mediaPlayer: MediaPlayer
     }
 
     private fun startTimerUpdate() {
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (mediaPlayer.isPlaying) {
                  delay(PLAYING_PROGRESS_DEBOUNCE_DELAY)

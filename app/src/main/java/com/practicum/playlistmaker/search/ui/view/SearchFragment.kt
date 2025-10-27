@@ -49,10 +49,11 @@ class SearchFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         var searchRequest:String=""
         var history : MutableList<Track> = mutableListOf()
         var historyMaxLength = viewModel.getTracksInHistoryMaxLength()?:1
+
+
         onHistoryClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
             toPlayer(track)
         }
@@ -71,6 +72,12 @@ class SearchFragment : Fragment() {
             history.addAll(it)
         }
 
+        if (tracks.isNotEmpty()){
+
+            showContent(tracks)
+        }
+
+
         binding.clearHistory.setOnClickListener {
             viewModel.clearHistory()
             binding.tracksHistoryList.adapter?.notifyDataSetChanged()
@@ -78,6 +85,7 @@ class SearchFragment : Fragment() {
         }
 
         binding.refrashButton.setOnClickListener {
+
             viewModel.searchDebounce(searchRequest)
         }
 
@@ -102,7 +110,6 @@ class SearchFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
                searchRequest = s?.toString() ?: ""
                if (searchRequest.isEmpty()) {
                    binding.clearSearch.visibility = View.GONE
@@ -112,7 +119,6 @@ class SearchFragment : Fragment() {
                    else  binding.searchHistory.visibility=View.GONE
                    return
                } else {
-
                    binding.clearSearch.visibility = View.VISIBLE
                    viewModel.searchDebounce(searchRequest)
                }
@@ -195,8 +201,8 @@ class SearchFragment : Fragment() {
         super.onDestroyView()
         binding.tracksList.adapter = null
         binding.tracksHistoryList.adapter = null
-        viewModel.destroy()
         textWatcher.let {  binding.inputEditText.removeTextChangedListener(it) }
+        _binding=null
     }
 
     companion object {
