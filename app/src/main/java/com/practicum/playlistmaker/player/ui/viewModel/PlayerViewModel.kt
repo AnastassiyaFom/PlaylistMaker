@@ -102,6 +102,6 @@ class PlayerViewModel ( private val mediaPlayer: MediaPlayer
 
 
     companion object {
-        const val PLAYING_PROGRESS_DEBOUNCE_DELAY = 500L
+        const val PLAYING_PROGRESS_DEBOUNCE_DELAY = 300L
     }
 }
