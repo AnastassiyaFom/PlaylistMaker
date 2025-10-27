@@ -9,7 +9,6 @@ object RetrofitClient {
             .baseUrl("https://itunes.apple.com")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
     val trackSearchApiService = retrofit.create(TrackSearchApi::class.java)
 
 }

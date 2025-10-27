@@ -6,32 +6,41 @@ import com.practicum.playlistmaker.search.data.dto.TracksSearchRequest
 import com.practicum.playlistmaker.search.data.dto.TracksSearchResponse
 import com.practicum.playlistmaker.search.domain.TracksRepository
 import com.practicum.playlistmaker.search.domain.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.Date
 
 import java.util.Locale
 
 class TracksRepositoryImpl (private val networkClient: NetworkClient): TracksRepository {
     override var resultCode = 0
-    override fun searchTracks(expression: String): List<Track> {
+    override fun searchTracks(expression: String): Flow<List<Track>> = flow {
         val response = networkClient.doRequest(TracksSearchRequest(expression))
         resultCode = response.resultCode
-        if (response.resultCode >= 200 && response.resultCode < 300) {
-            return (response as TracksSearchResponse).results.map {
-                Track(
-                    trackId = it.trackId?:0,
-                    trackName = it.trackName?:"",
-                    artistName = it.artistName?:"",
-                    trackTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTimeMillis),
-                    artworkUrl100 = it.artworkUrl100?:"",
-                    artworkUrl500 = enlargeImageUrl(it.artworkUrl100)?:"",
-                    collectionName = it.collectionName?:"",
-                    releaseDate = extractYear(it.releaseDate )?:"",
-                    primaryGenreName = it.primaryGenreName?:"",
-                    country = it.country?:"",
-                    previewUrl = it.previewUrl?:""
-                ) }
+        if (resultCode  >= 200 && resultCode  < 300) {
+            with (response as TracksSearchResponse) {
+                val data = response.results.map {
+                    Track(
+                        trackId = it.trackId ?: 0,
+                        trackName = it.trackName ?: "",
+                        artistName = it.artistName ?: "",
+                        trackTime = SimpleDateFormat(
+                                "mm:ss",
+                                Locale.getDefault()
+                                ).format(it.trackTimeMillis),
+                        artworkUrl100 = it.artworkUrl100 ?: "",
+                        artworkUrl500 = enlargeImageUrl(it.artworkUrl100) ?: "",
+                        collectionName = it.collectionName ?: "",
+                        releaseDate = extractYear(it.releaseDate) ?: "",
+                        primaryGenreName = it.primaryGenreName ?: "",
+                        country = it.country ?: "",
+                        previewUrl = it.previewUrl ?: ""
+                    )
+                }
+                emit(data)
+            }
         } else {
-            return emptyList()
+            emit(emptyList())
         }
     }
     private fun enlargeImageUrl(artworkUrl: String?): String {

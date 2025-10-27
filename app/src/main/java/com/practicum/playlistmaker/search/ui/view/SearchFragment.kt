@@ -52,7 +52,7 @@ class SearchFragment : Fragment() {
 
         var searchRequest:String=""
         var history : MutableList<Track> = mutableListOf()
-        var historyMaxLength=viewModel.getTracksInHistoryMaxLength()?:1
+        var historyMaxLength = viewModel.getTracksInHistoryMaxLength()?:1
         onHistoryClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
             toPlayer(track)
         }
