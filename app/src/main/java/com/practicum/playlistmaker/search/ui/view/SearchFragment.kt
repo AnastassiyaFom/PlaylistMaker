@@ -34,6 +34,7 @@ class SearchFragment : Fragment() {
     private val viewModel:SearchViewModel by inject()
     private lateinit var textWatcher  : TextWatcher
     private var tracks : MutableList<Track> = mutableListOf()
+    private var history : MutableList<Track> = mutableListOf()
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private lateinit var onTrackClickDebounce: (Track) -> Unit
@@ -50,7 +51,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var searchRequest:String=""
-        var history : MutableList<Track> = mutableListOf()
+
         var historyMaxLength = viewModel.getTracksInHistoryMaxLength()?:1
 
 
@@ -185,9 +186,11 @@ class SearchFragment : Fragment() {
         binding.errorTrackNotFound.visibility = View.VISIBLE
     }
     fun showHistory(){
-        tracks.clear()
-        binding.tracksList.adapter?.notifyDataSetChanged()
-        binding.searchHistory.visibility=View.VISIBLE
+        if (history.isNotEmpty()) {
+            tracks.clear()
+            binding.tracksList.adapter?.notifyDataSetChanged()
+            binding.searchHistory.visibility = View.VISIBLE
+        }
     }
 
     private fun toPlayer(item: Track) {
