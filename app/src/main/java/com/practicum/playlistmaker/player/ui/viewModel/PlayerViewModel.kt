@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.player.domain.DBTrackInteractor
 import com.practicum.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -11,7 +12,8 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel ( private val mediaPlayer: MediaPlayer
+class PlayerViewModel ( private val mediaPlayer: MediaPlayer,
+                        private val dbInteractor: DBTrackInteractor
 ): ViewModel(){
 
     private var track:Track?=null
@@ -29,6 +31,17 @@ class PlayerViewModel ( private val mediaPlayer: MediaPlayer
         checkedTrack.postValue(track)
         preparePlayer()
         return track
+    }
+    fun isTrackInFavorites(track:Track):Boolean{
+        return dbInteractor.isTrackInSelected(track)
+    }
+
+    fun addToFavorites(track:Track){
+        dbInteractor.insertTrack(track)
+    }
+
+    fun deleteFromFavorites(track:Track){
+        dbInteractor.deleteTrack(track)
     }
 
     // Методы для плеера

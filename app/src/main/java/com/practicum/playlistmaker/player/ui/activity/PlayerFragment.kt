@@ -37,9 +37,9 @@ class PlayerFragment : Fragment() {
             checkedTrack=it
         }
         checkedTrack = viewModel.loadTrack(requireArguments().getParcelable(ARGS_TRACK))
-
+        if (checkedTrack == null) checkedTrack = Track.getEmptyTrack()
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
-                setButtonIcon(it.isButtonPlay)
+                setPlayButtonIcon(it.isButtonPlay)
                 enableButton(it.isPlayButtonEnabled)
                 binding.playingTrackTime.text = it.progress
                 if (!(it is PlayerState.Playing)) binding.playButton.setImageResource(R.drawable.play_button_play)
@@ -55,6 +55,24 @@ class PlayerFragment : Fragment() {
             trackNameLibrary.text = checkedTrack?.trackName ?: ""
             artistNameLibrary.text = checkedTrack?.artistName ?: ""
             durationData.text = checkedTrack?.trackTime ?: ""
+        }
+
+        // Добавление/удаление трека из избранного
+        binding.like.setOnClickListener {
+            var setTrackToFavorites: Boolean = false
+            if (checkedTrack!!.isEmpty())
+                setLikeButtonImage(setTrackToFavorites)
+            else {
+                setTrackToFavorites = ! viewModel.isTrackInFavorites(checkedTrack!!)
+                setLikeButtonImage(setTrackToFavorites)
+                if (setTrackToFavorites) {
+                    //добавить трек в избранное
+                    viewModel.addToFavorites(checkedTrack!!)
+                } else {
+                    //удалить трек из избранного
+                    viewModel.deleteFromFavorites(checkedTrack!!)
+                }
+            }
         }
 
         val artworkUrl512: String = checkedTrack?.artworkUrl500.toString()
@@ -111,11 +129,22 @@ class PlayerFragment : Fragment() {
         binding.playButton.isEnabled = isEnabled
     }
 
-    private fun setButtonIcon(isButtonPlay: Boolean) {
+    private fun setPlayButtonIcon(isButtonPlay: Boolean) {
         if (isButtonPlay){
             binding.playButton.setImageResource(R.drawable.play_button_play)
         } else {
             binding.playButton.setImageResource(R.drawable.play_button_pause)
+        }
+    }
+
+    private fun setLikeButtonImage(isTrackInFavorites: Boolean) {
+        if (isTrackInFavorites){
+            //удалить трек из избранного
+            binding.like.setImageResource(R.drawable.like_selected)
+        }
+        else {
+            //добавить трек в избранное
+            binding.like.setImageResource(R.drawable.like_unselected)
         }
     }
     private fun dpToPixel(dp: Float): Int {
@@ -123,6 +152,7 @@ class PlayerFragment : Fragment() {
             val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
             return Math.round(px).toInt()
     }
+
     companion object {
         const val ARGS_TRACK = "track"
     }

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
 
 
@@ -66,4 +67,8 @@ dependencies {
     implementation (libs.androidx.navigation.ui.ktx)
     implementation (libs.androidx.fragment.ktx.v156)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx) // поддержка корутин
+    kapt(libs.androidx.room.compiler)
+
 }

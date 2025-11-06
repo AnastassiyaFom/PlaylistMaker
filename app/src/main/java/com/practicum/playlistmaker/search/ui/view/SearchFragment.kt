@@ -29,8 +29,6 @@ import org.koin.android.ext.android.inject
 
 @Suppress("DEPRECATION")
 class SearchFragment : Fragment() {
-
-
     private val viewModel:SearchViewModel by inject()
     private lateinit var textWatcher  : TextWatcher
     private var tracks : MutableList<Track> = mutableListOf()
@@ -74,7 +72,6 @@ class SearchFragment : Fragment() {
         }
 
         if (tracks.isNotEmpty()){
-
             showContent(tracks)
         }
 
@@ -86,7 +83,6 @@ class SearchFragment : Fragment() {
         }
 
         binding.refrashButton.setOnClickListener {
-
             viewModel.searchDebounce(searchRequest)
         }
 

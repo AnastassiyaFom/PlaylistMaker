@@ -1,7 +1,5 @@
 package com.practicum.playlistmaker.search.ui.viewModel
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,7 +16,7 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
                        private val tracksHistoryInteractor: TracksHistoryInteractor
 ): ViewModel() {
 
-    private val handler = Handler(Looper.getMainLooper())
+
     private var latestSearchRequest:String?=""
     private val stateLiveData = MutableLiveData<TracksState>()
     fun observeState(): LiveData<TracksState> = stateLiveData
@@ -93,11 +91,6 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
     {
         tracksHistoryInteractor.clearHistory()
         renderHistory(tracksHistoryInteractor.getTracksFromHistory())
-    }
-
-    override fun onCleared() {
-            super.onCleared()
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
     fun chooseTrack(track: Track) {

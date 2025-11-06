@@ -28,7 +28,7 @@ val viewModuleModule = module {
         PlaylistsViewModel()
     }
     factory{
-        SelectedTracksViewModel()
+        SelectedTracksViewModel(get())
     }
 
 }
