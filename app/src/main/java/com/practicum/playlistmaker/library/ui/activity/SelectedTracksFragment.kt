@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.library.ui.activity
 
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,12 +18,10 @@ import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.search.ui.view.OnItemClickListener
 import com.practicum.playlistmaker.search.ui.view.TracksAdapter
-import com.practicum.playlistmaker.search.ui.viewModel.TracksState
 import com.practicum.playlistmaker.utils.debounce
 import org.koin.android.ext.android.inject
 
 class SelectedTracksFragment : Fragment() {
-    //переменная-заглушка, будет переписана в следющем спринте
 
     private var _binding: FragmentSelectedTracksBinding? = null
     private lateinit var onTrackClickDebounce: (Track) -> Unit
@@ -38,6 +37,13 @@ class SelectedTracksFragment : Fragment() {
         _binding = FragmentSelectedTracksBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getData()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.observeState().observe(viewLifecycleOwner) {
@@ -51,7 +57,7 @@ class SelectedTracksFragment : Fragment() {
         }
     }
 
-    private fun showContent(tracks: MutableList<Track>) {
+    private fun showContent(tracks: List<Track>) {
         binding.errorNoSelectedTracks.visibility = View.GONE
         binding.selectedTracksList.visibility = View.VISIBLE
         onTrackClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false)
@@ -74,7 +80,7 @@ class SelectedTracksFragment : Fragment() {
 
     private fun toPlayer(item: Track) {
         findNavController().navigate(
-            R.id.action_searchFragment_to_playerFragment,
+            R.id.action_mediatechFragment_to_playerFragment,
             bundleOf(PlayerFragment.ARGS_TRACK to item)
         )
     }

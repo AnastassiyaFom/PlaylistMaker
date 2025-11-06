@@ -6,9 +6,8 @@ import java.util.Date
 
 @Entity(tableName = "selected_track_table")
 data class SelectedTrackEntity (
-    @PrimaryKey //(autoGenerate = true)
-    //val id: Long = 0,
-    //val id: String,
+    @PrimaryKey
+
     val trackId:Int,
     val trackName: String,
     val artistName: String,

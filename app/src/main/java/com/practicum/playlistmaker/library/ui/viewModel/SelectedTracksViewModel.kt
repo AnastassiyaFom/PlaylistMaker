@@ -18,6 +18,9 @@ class SelectedTracksViewModel(
     fun observeState(): LiveData<SelectedTracksState> = stateLiveData
 
     init {
+        getData()
+    }
+    fun getData(){
         viewModelScope.launch {
             selectedTrackInteractor
                 .selectedTracks()

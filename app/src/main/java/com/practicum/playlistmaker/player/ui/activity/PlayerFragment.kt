@@ -56,14 +56,16 @@ class PlayerFragment : Fragment() {
             artistNameLibrary.text = checkedTrack?.artistName ?: ""
             durationData.text = checkedTrack?.trackTime ?: ""
         }
-
+        var setTrackToFavorites: Boolean = false
+        if (checkedTrack!!.isEmpty())
+            setLikeButtonImage(setTrackToFavorites)
+        else{
+            setTrackToFavorites = viewModel.isTrackInFavorites(checkedTrack!!)
+            setLikeButtonImage(setTrackToFavorites)
+        }
         // Добавление/удаление трека из избранного
         binding.like.setOnClickListener {
-            var setTrackToFavorites: Boolean = false
-            if (checkedTrack!!.isEmpty())
-                setLikeButtonImage(setTrackToFavorites)
-            else {
-                setTrackToFavorites = ! viewModel.isTrackInFavorites(checkedTrack!!)
+                setTrackToFavorites = !setTrackToFavorites
                 setLikeButtonImage(setTrackToFavorites)
                 if (setTrackToFavorites) {
                     //добавить трек в избранное
@@ -72,7 +74,7 @@ class PlayerFragment : Fragment() {
                     //удалить трек из избранного
                     viewModel.deleteFromFavorites(checkedTrack!!)
                 }
-            }
+            
         }
 
         val artworkUrl512: String = checkedTrack?.artworkUrl500.toString()
