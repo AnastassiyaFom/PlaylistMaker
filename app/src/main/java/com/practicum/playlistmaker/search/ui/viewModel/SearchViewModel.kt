@@ -24,10 +24,11 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
     private var searchJob: Job? = null
     fun observeHistory(): LiveData<MutableList<Track>> = historyLiveData
 
-    init {
+    fun createViewModel(state: TracksState) {
         renderHistory(tracksHistoryInteractor.getTracksFromHistory())
         renderState(
-            TracksState.WaitingForRequest
+            //TracksState.WaitingForRequest
+            state
         )
     }
 
@@ -103,6 +104,7 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
             TracksState.WaitingForRequest
         )
     }
+
 
     fun getTracksInHistoryMaxLength(): Int {
         return tracksHistoryInteractor.getTracksInHistoryMaxLength()?:1

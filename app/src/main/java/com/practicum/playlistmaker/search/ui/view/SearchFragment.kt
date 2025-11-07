@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
+
 import com.practicum.playlistmaker.search.domain.Track
 import com.practicum.playlistmaker.search.ui.viewModel.SearchViewModel
 import com.practicum.playlistmaker.search.ui.viewModel.TracksState
@@ -35,23 +36,53 @@ class SearchFragment : Fragment() {
     private var history : MutableList<Track> = mutableListOf()
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
+    private var searchRequest:String=""
     private lateinit var onTrackClickDebounce: (Track) -> Unit
     private lateinit var onHistoryClickDebounce: (Track) -> Unit
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (searchRequest.isNotEmpty()) {
+            outState.putString("SearchRequest", searchRequest)
+            if (tracks.isNotEmpty())
+            {
+                outState.putParcelableArrayList("tracks", this.tracks as ArrayList)
+                outState.putBoolean("hasContent", true)
+            }
+            else {
+                outState.putBoolean("hasContent", false)
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
 
+        viewModel.createViewModel(TracksState.WaitingForRequest)
+
         return binding.root
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    //@SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var searchRequest:String=""
 
         var historyMaxLength = viewModel.getTracksInHistoryMaxLength()?:1
-
+        var hasSavedContent = false
+        if (savedInstanceState!=null && savedInstanceState.getBoolean("hasContent"))
+        {
+            tracks.addAll(savedInstanceState.getParcelableArrayList<Track>("tracks")?: mutableListOf())
+            hasSavedContent = savedInstanceState.getBoolean("hasContent")
+            searchRequest = savedInstanceState.getString("SearchRequest").toString()
+            viewModel.createViewModel(TracksState.Content(tracks))
+        }
+        if (searchRequest.isNotEmpty())
+        {
+            var tr: MutableList<Track> = mutableListOf()
+            tr.addAll(tracks)
+            viewModel.createViewModel(TracksState.Content(tr))
+            showContent(tr)
+        }
 
         onHistoryClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
             toPlayer(track)
@@ -70,11 +101,6 @@ class SearchFragment : Fragment() {
             history.clear()
             history.addAll(it)
         }
-
-        if (tracks.isNotEmpty()){
-            showContent(tracks)
-        }
-
 
         binding.clearHistory.setOnClickListener {
             viewModel.clearHistory()
@@ -96,10 +122,10 @@ class SearchFragment : Fragment() {
             binding.errorNoInternet.visibility = View.GONE
 
             requireActivity().currentFocus?.let { view:View ->
-               val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-               imm?.hideSoftInputFromWindow(view.windowToken, 0)
+                val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(view.windowToken, 0)
             }
-       }
+        }
 
         binding.inputEditText.setText(searchRequest)
 
@@ -107,19 +133,23 @@ class SearchFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-               searchRequest = s?.toString() ?: ""
-               if (searchRequest.isEmpty()) {
-                   binding.clearSearch.visibility = View.GONE
-                   showHistory()
-                   if (binding.inputEditText.hasFocus() && !history.isEmpty())
-                       binding.searchHistory.visibility=View.VISIBLE
-                   else  binding.searchHistory.visibility=View.GONE
-                   return
-               } else {
-                   binding.clearSearch.visibility = View.VISIBLE
-                   viewModel.searchDebounce(searchRequest)
-               }
-           }
+                searchRequest = s?.toString() ?: ""
+                if (searchRequest.isEmpty()) {
+                    binding.clearSearch.visibility = View.GONE
+                    showHistory()
+                    if (binding.inputEditText.hasFocus() && !history.isEmpty())
+                        binding.searchHistory.visibility=View.VISIBLE
+                    else  binding.searchHistory.visibility=View.GONE
+                    return
+                } else {
+                    binding.clearSearch.visibility = View.VISIBLE
+                    if (hasSavedContent) {
+                        hasSavedContent = false
+                        return
+                    }
+                    else viewModel.searchDebounce(searchRequest)
+                }
+            }
         }
         binding.inputEditText.addTextChangedListener(textWatcher)
 
@@ -147,17 +177,19 @@ class SearchFragment : Fragment() {
     }
 
     private fun render(state: TracksState) {
-         binding.errorNoInternet.visibility = View.GONE
-         binding.errorTrackNotFound.visibility = View.GONE
-         binding.progressBar.visibility = View.GONE
-         binding.searchHistory.visibility = View.GONE
-        when (state){
-            is TracksState.Error->showError()
-            is TracksState.Empty->showEmpty()
-            is TracksState.Loading->showLoading()
-            is TracksState.WaitingForRequest->showHistory()
-            is TracksState.Content->showContent(state.tracks)
+        binding.errorNoInternet.visibility = View.GONE
+        binding.errorTrackNotFound.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+        binding.searchHistory.visibility = View.GONE
+        when (state) {
+            is TracksState.Error -> showError()
+            is TracksState.Empty -> showEmpty()
+            is TracksState.Loading -> showLoading()
+            is TracksState.WaitingForRequest -> showHistory()
+            is TracksState.Content -> showContent(state.tracks)
+
         }
+
     }
     fun showLoading(){
         tracks.clear()
@@ -166,6 +198,8 @@ class SearchFragment : Fragment() {
 
     }
     fun showContent(tracksList: List<Track>) {
+        binding.clearSearch.visibility = View.VISIBLE
+        binding.searchHistory.visibility=View.GONE
         tracks.clear()
         tracks.addAll(tracksList)
         binding.tracksList.adapter?.notifyDataSetChanged()
