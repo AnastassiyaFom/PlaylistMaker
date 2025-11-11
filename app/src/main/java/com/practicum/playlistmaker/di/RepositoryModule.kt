@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker.di
 
+import com.practicum.playlistmaker.library.data.DB.AppDatabase
+import com.practicum.playlistmaker.library.data.DB.SelectedTracksDao_Impl
 import com.practicum.playlistmaker.library.data.DB.TrackDbConvertor
 import com.practicum.playlistmaker.library.data.SelectedTracksRepositoryImpl
 import com.practicum.playlistmaker.library.domain.db.SelectedTracksRepository
@@ -17,6 +19,7 @@ import com.practicum.playlistmaker.settings.domain.SharingRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import com.practicum.playlistmaker.library.data.DB.SelectedTracksDao as SelectedTracksDao
 
 val repositoryModule = module {
 
@@ -39,17 +42,11 @@ val repositoryModule = module {
     }
     factory { TrackDbConvertor() }
 
+    factory { get<AppDatabase>().selectedTracksDao() }
+
     factory <SelectedTracksRepository> {
         SelectedTracksRepositoryImpl(get(),get())
     }
-    /*
-    single <SelectedTracksRepository> {
-        SelectedTracksRepositoryImpl(get(),get())
-    }
-
-
-     */
-
 
 
 }
