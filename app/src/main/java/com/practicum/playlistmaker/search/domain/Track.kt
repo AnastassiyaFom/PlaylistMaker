@@ -16,7 +16,7 @@ data class Track(
     val primaryGenreName:String,
     val country:String,
     val previewUrl:String
-): Parcelable{
+): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString() ?: "",
@@ -48,6 +48,40 @@ data class Track(
         return 0
     }
 
+    fun isEmpty():Boolean{
+
+        return (trackId==0 &&
+                trackName.isEmpty() &&
+                artistName.isEmpty() &&
+                trackTime.isEmpty() &&
+                artworkUrl100.isEmpty() &&
+                artworkUrl500.isEmpty() &&
+                collectionName.isEmpty() &&
+                releaseDate.isEmpty() &&
+                primaryGenreName.isEmpty() &&
+                country.isEmpty() &&
+                previewUrl.isEmpty()
+                )
+    }
+
+    fun isNotEmpty():Boolean{
+        return (!isEmpty())
+    }
+    constructor():  this(
+        trackId = 0,
+        trackName = "",
+        artistName = "",
+        trackTime = "",
+        artworkUrl100 = "",
+        artworkUrl500 = "",
+        collectionName = "",
+        releaseDate = "",
+        primaryGenreName = "",
+        country = "",
+        previewUrl = "",
+    )
+
+
     companion object CREATOR : Parcelable.Creator<Track> {
         override fun createFromParcel(parcel: Parcel): Track {
             return Track(parcel)
@@ -55,6 +89,23 @@ data class Track(
 
         override fun newArray(size: Int): Array<Track?> {
             return arrayOfNulls(size)
+        }/*
+        fun getEmptyTrack(): Track {
+            return Track(
+                trackId = 0,
+                trackName = "",
+                artistName = "",
+                trackTime = "",
+                artworkUrl100 = "",
+                artworkUrl500 = "",
+                collectionName = "",
+                releaseDate = "",
+                primaryGenreName = "",
+                country = "",
+                previewUrl = "",
+            )
+
         }
+        */
     }
 }

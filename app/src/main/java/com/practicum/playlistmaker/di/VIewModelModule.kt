@@ -16,7 +16,7 @@ val viewModuleModule = module {
     }
 
     factory{
-        PlayerViewModel (get())
+        PlayerViewModel (get(), get())
     }
     factory{
         SettingsViewModel(get(),get())
@@ -28,7 +28,7 @@ val viewModuleModule = module {
         PlaylistsViewModel()
     }
     factory{
-        SelectedTracksViewModel()
+        SelectedTracksViewModel(get())
     }
 
 }

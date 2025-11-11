@@ -1,7 +1,5 @@
 package com.practicum.playlistmaker.search.ui.viewModel
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,7 +16,7 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
                        private val tracksHistoryInteractor: TracksHistoryInteractor
 ): ViewModel() {
 
-    private val handler = Handler(Looper.getMainLooper())
+
     private var latestSearchRequest:String?=""
     private val stateLiveData = MutableLiveData<TracksState>()
     fun observeState(): LiveData<TracksState> = stateLiveData
@@ -26,10 +24,11 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
     private var searchJob: Job? = null
     fun observeHistory(): LiveData<MutableList<Track>> = historyLiveData
 
-    init {
+    fun createViewModel(state: TracksState) {
         renderHistory(tracksHistoryInteractor.getTracksFromHistory())
         renderState(
-            TracksState.WaitingForRequest
+            //TracksState.WaitingForRequest
+            state
         )
     }
 
@@ -95,11 +94,6 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
         renderHistory(tracksHistoryInteractor.getTracksFromHistory())
     }
 
-    override fun onCleared() {
-            super.onCleared()
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
-
     fun chooseTrack(track: Track) {
         tracksHistoryInteractor.addTrackToHistory(track)
         renderHistory(tracksHistoryInteractor.getTracksFromHistory())
@@ -110,6 +104,7 @@ class SearchViewModel (private val tracksInteractor: TracksInteractor,
             TracksState.WaitingForRequest
         )
     }
+
 
     fun getTracksInHistoryMaxLength(): Int {
         return tracksHistoryInteractor.getTracksInHistoryMaxLength()?:1

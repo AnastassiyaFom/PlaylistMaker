@@ -11,7 +11,11 @@
         android:name="com.practicum.playlistmaker.library.ui.activity.MediatechFragment"
         android:label="MediatechFragment"
         tools:layout="@layout/fragment_mediatech"
-        />
+        >
+        <action
+            android:id="@+id/action_mediatechFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.practicum.playlistmaker.settings.ui.SettingsFragment"

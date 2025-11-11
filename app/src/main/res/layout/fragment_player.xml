@@ -107,21 +107,12 @@
                 android:id="@+id/like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/like"
+                android:src="@drawable/like_unselected"
                 app:layout_constraintEnd_toStartOf="@id/track_guideline_right"
                 app:layout_constraintTop_toBottomOf="@id/artist_name_library"
                 android:paddingTop="54dp"
                 />
-            <ImageView
-                android:id="@+id/like_selected"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/like_selected"
-                app:layout_constraintEnd_toStartOf="@id/track_guideline_right"
-                app:layout_constraintTop_toBottomOf="@id/artist_name_library"
-                android:paddingTop="54dp"
-                android:visibility="gone"
-                />
+
             <ImageView
                 android:id="@+id/play_button"
                 android:layout_width="wrap_content"

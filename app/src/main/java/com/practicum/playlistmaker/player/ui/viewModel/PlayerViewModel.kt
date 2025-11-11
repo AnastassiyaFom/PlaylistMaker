@@ -4,6 +4,8 @@ import android.media.MediaPlayer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.library.domain.db.SelectedTracksInteractor
+
 import com.practicum.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -11,12 +13,13 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel ( private val mediaPlayer: MediaPlayer
+class PlayerViewModel ( private val mediaPlayer: MediaPlayer,
+                        private val dbInteractor: SelectedTracksInteractor
 ): ViewModel(){
 
-    private var track:Track?=null
-    private val checkedTrack = MutableLiveData<Track?>()
-    fun observeCheckedTrack(): MutableLiveData<Track?> = checkedTrack
+    private var track:Track=Track()
+    private val checkedTrack = MutableLiveData<Track>()
+    fun observeCheckedTrack(): MutableLiveData<Track> = checkedTrack
 
     private var playerStateLiveData:MutableLiveData<PlayerState>  = MutableLiveData( PlayerState.Default())
     fun observePlayerState(): MutableLiveData<PlayerState> = playerStateLiveData
@@ -24,11 +27,22 @@ class PlayerViewModel ( private val mediaPlayer: MediaPlayer
     private var timerJob: Job? = null
 
     // Методы для трека
-    fun loadTrack(trackToPlay: Track?):Track? {
+    fun loadTrack(trackToPlay: Track):Track {
         track = trackToPlay
         checkedTrack.postValue(track)
         preparePlayer()
         return track
+    }
+    fun isTrackInFavorites(track:Track):Boolean{
+        return dbInteractor.isTrackInSelected(track)
+    }
+
+    fun addToFavorites(track:Track){
+        dbInteractor.insertTrack(track)
+    }
+
+    fun deleteFromFavorites(track:Track){
+        dbInteractor.deleteTrack(track)
     }
 
     // Методы для плеера
@@ -49,7 +63,7 @@ class PlayerViewModel ( private val mediaPlayer: MediaPlayer
     }
 
     private fun preparePlayer() {
-        val url:String =track?.previewUrl?:""
+        val url:String =track.previewUrl?:""
         if (url.isNotEmpty()) {
             mediaPlayer.setDataSource(url)
             mediaPlayer.prepareAsync()
