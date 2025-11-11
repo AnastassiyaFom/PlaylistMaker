@@ -5,4 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SelectedTracksRepository {
     fun selectedTracks(): Flow<List<Track>>
+    fun insertTrack(track: Track)
+    fun deleteTrack(track:Track)
+    fun getTrackById(id:Int):Track?
 }

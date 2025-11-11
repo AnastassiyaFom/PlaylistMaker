@@ -22,7 +22,7 @@ class PlayerFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel : PlayerViewModel by inject()
-    private  var checkedTrack: Track? = null
+    private  var checkedTrack: Track =Track()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -36,13 +36,13 @@ class PlayerFragment : Fragment() {
         viewModel.observeCheckedTrack().observe(viewLifecycleOwner) {
             checkedTrack=it
         }
-        checkedTrack = viewModel.loadTrack(requireArguments().getParcelable(ARGS_TRACK))
-        if (checkedTrack == null) checkedTrack = Track.getEmptyTrack()
+        checkedTrack = viewModel.loadTrack(requireArguments().getParcelable(ARGS_TRACK)?:Track())
+
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
-                setPlayButtonIcon(it.isButtonPlay)
-                enableButton(it.isPlayButtonEnabled)
-                binding.playingTrackTime.text = it.progress
-                if (!(it is PlayerState.Playing)) binding.playButton.setImageResource(R.drawable.play_button_play)
+            setPlayButtonIcon(it.isButtonPlay)
+            enableButton(it.isPlayButtonEnabled)
+            binding.playingTrackTime.text = it.progress
+            if (!(it is PlayerState.Playing)) binding.playButton.setImageResource(R.drawable.play_button_play)
         }
 
         // Возврат в предыдущую активити
@@ -52,67 +52,67 @@ class PlayerFragment : Fragment() {
 
         // Отрисовываем  экран с данными о треке
         binding.apply{
-            trackNameLibrary.text = checkedTrack?.trackName ?: ""
-            artistNameLibrary.text = checkedTrack?.artistName ?: ""
-            durationData.text = checkedTrack?.trackTime ?: ""
+            trackNameLibrary.text = checkedTrack.trackName ?: ""
+            artistNameLibrary.text = checkedTrack.artistName ?: ""
+            durationData.text = checkedTrack.trackTime ?: ""
         }
         var setTrackToFavorites: Boolean = false
-        if (checkedTrack!!.isEmpty())
+
+        if (checkedTrack.isEmpty())
             setLikeButtonImage(setTrackToFavorites)
-        else{
-            setTrackToFavorites = viewModel.isTrackInFavorites(checkedTrack!!)
+        else {
+            setTrackToFavorites = viewModel.isTrackInFavorites(checkedTrack)
             setLikeButtonImage(setTrackToFavorites)
-        }
-        // Добавление/удаление трека из избранного
-        binding.like.setOnClickListener {
-                setTrackToFavorites = !setTrackToFavorites
-                setLikeButtonImage(setTrackToFavorites)
-                if (setTrackToFavorites) {
-                    //добавить трек в избранное
-                    viewModel.addToFavorites(checkedTrack!!)
-                } else {
-                    //удалить трек из избранного
-                    viewModel.deleteFromFavorites(checkedTrack!!)
-                }
-            
         }
 
-        val artworkUrl512: String = checkedTrack?.artworkUrl500.toString()
+        // Добавление/удаление трека из избранного
+        binding.like.setOnClickListener {
+            setTrackToFavorites = !setTrackToFavorites
+            setLikeButtonImage(setTrackToFavorites)
+            if (setTrackToFavorites) {
+                viewModel.addToFavorites(checkedTrack)
+            } else {
+                viewModel.deleteFromFavorites(checkedTrack)
+            }
+
+        }
+
+        val artworkUrl512: String = checkedTrack.artworkUrl500.toString()
         Glide.with(requireContext())
             .load(artworkUrl512)
             .placeholder(R.drawable.album_placeholder_512)
             .centerCrop()
             .transform(RoundedCorners(dpToPixel(8f)))
             .into(binding.trackImageLibrary)
-        if (checkedTrack?.collectionName.isNullOrEmpty()) {
+        if (checkedTrack.collectionName.isEmpty()) {
             binding.collectionData.visibility = View.GONE
             binding.collectionText.visibility = View.GONE
         } else {
-            binding.collectionData.text = checkedTrack?.collectionName
+            binding.collectionData.text = checkedTrack.collectionName
             binding.collectionText.visibility = View.VISIBLE
         }
 
-        if (checkedTrack?.releaseDate.isNullOrEmpty()) {
+        if (checkedTrack.releaseDate.isEmpty()) {
             binding.yearData.visibility = View.GONE
             binding.yearText.visibility = View.GONE
         } else {
-            binding.yearData.text = checkedTrack?.releaseDate
+            binding.yearData.text = checkedTrack.releaseDate
             binding.yearText.visibility = View.VISIBLE
         }
 
-        if (checkedTrack?.primaryGenreName.isNullOrEmpty()) {
+        if (checkedTrack.primaryGenreName.isEmpty()) {
             binding.genreData.visibility = View.GONE
             binding.genreText.visibility = View.GONE
         } else {
-            binding.genreData.text = checkedTrack?.primaryGenreName
+            binding.genreData.text = checkedTrack.primaryGenreName
             binding.genreText.visibility = View.VISIBLE
         }
 
-        if (checkedTrack?.country.isNullOrEmpty()) {
+        if (checkedTrack.country.isEmpty()) {
             binding.countryData.visibility = View.GONE
             binding.countryText.visibility = View.GONE
         } else {
-            binding.countryData.text = checkedTrack?.country
+            binding.countryData.text = checkedTrack.country
             binding.countryText.visibility = View.VISIBLE
         }
 
@@ -150,9 +150,9 @@ class PlayerFragment : Fragment() {
         }
     }
     private fun dpToPixel(dp: Float): Int {
-            val metrics: DisplayMetrics = Resources.getSystem().getDisplayMetrics()
-            val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
-            return Math.round(px).toInt()
+        val metrics: DisplayMetrics = Resources.getSystem().getDisplayMetrics()
+        val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
+        return Math.round(px).toInt()
     }
 
     companion object {

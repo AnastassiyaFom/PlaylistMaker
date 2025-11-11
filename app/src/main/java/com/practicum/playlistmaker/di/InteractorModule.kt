@@ -3,8 +3,7 @@ package com.practicum.playlistmaker.di
 
 import com.practicum.playlistmaker.library.domain.db.SelectedTracksInteractor
 import com.practicum.playlistmaker.library.domain.db.SelectedTracksInteractorImpl
-import com.practicum.playlistmaker.player.domain.DBTrackInteractor
-import com.practicum.playlistmaker.player.domain.DBTrackInteractorImpl
+
 import com.practicum.playlistmaker.search.domain.TracksHistoryInteractor
 import com.practicum.playlistmaker.search.domain.TracksHistoryInteractorImpl
 import com.practicum.playlistmaker.search.domain.TracksInteractor
@@ -32,13 +31,15 @@ val interactorModule = module {
     factory<SettingsInteractor>{
         SettingsInteractorImpl(get())
     }
-    single <SelectedTracksInteractor>{
+    factory <SelectedTracksInteractor>{
          SelectedTracksInteractorImpl(get())
     }
-
-    single <DBTrackInteractor>{
+/*
+    factory <DBTrackInteractor>{
         DBTrackInteractorImpl(get())
     }
 
+
+ */
 
 }
