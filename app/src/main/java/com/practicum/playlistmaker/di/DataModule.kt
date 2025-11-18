@@ -5,10 +5,6 @@ import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.library.data.DB.AppDatabase
-import com.practicum.playlistmaker.library.data.DB.SelectedTracksDao
-import com.practicum.playlistmaker.library.data.DB.SelectedTracksDao_Impl
-
-
 import com.practicum.playlistmaker.search.data.NetworkClient
 import com.practicum.playlistmaker.search.data.PrefsStorageClient
 import com.practicum.playlistmaker.search.data.network.RetrofitNetworkClient

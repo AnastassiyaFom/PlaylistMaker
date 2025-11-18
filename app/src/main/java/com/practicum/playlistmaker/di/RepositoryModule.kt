@@ -1,11 +1,9 @@
 package com.practicum.playlistmaker.di
 
 import com.practicum.playlistmaker.library.data.DB.AppDatabase
-import com.practicum.playlistmaker.library.data.DB.SelectedTracksDao_Impl
 import com.practicum.playlistmaker.library.data.DB.TrackDbConvertor
 import com.practicum.playlistmaker.library.data.SelectedTracksRepositoryImpl
 import com.practicum.playlistmaker.library.domain.db.SelectedTracksRepository
-
 import com.practicum.playlistmaker.search.data.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.TracksRepositoryImpl
 import com.practicum.playlistmaker.search.domain.SearchHistoryRepository
