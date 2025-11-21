@@ -38,7 +38,6 @@ class SelectedTracksFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onResume() {
         super.onResume()
         viewModel.getData()
@@ -58,7 +57,7 @@ class SelectedTracksFragment : Fragment() {
     }
 
     private fun showContent(tracks: List<Track>) {
-        binding.errorNoSelectedTracks.visibility = View.GONE
+        binding.errorNoPlaylists.visibility = View.GONE
         binding.selectedTracksList.visibility = View.VISIBLE
         onTrackClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false)
         { track ->
@@ -74,7 +73,7 @@ class SelectedTracksFragment : Fragment() {
     }
 
     private fun showEmpty() {
-        binding.errorNoSelectedTracks.visibility = View.VISIBLE
+        binding.errorNoPlaylists.visibility = View.VISIBLE
         binding.selectedTracksList.visibility = View.GONE
     }
 
