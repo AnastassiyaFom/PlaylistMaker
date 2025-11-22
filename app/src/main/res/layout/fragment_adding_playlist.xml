@@ -28,79 +28,87 @@
             android:layout_marginBottom="12dp"
             android:text="@string/new_playlist"/>
     </LinearLayout>
-    <ImageView
-        android:id="@+id/addedImage"
-        android:layout_width="@dimen/playlist_image_frame"
-        android:layout_height="@dimen/playlist_image_frame"
-        android:layout_marginTop="26dp"
-        app:layout_constraintTop_toBottomOf = "@id/back"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/ic_add_image"
-        android:layout_gravity="center"
-        android:background="@drawable/frame"
-        android:gravity="center"
-        android:scaleType="centerInside">
-    </ImageView>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input_name"
-        app:layout_constraintTop_toBottomOf = "@id/addedImage"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp"
-        android:layout_width="328dp"
-        android:layout_height="56dp"
-        android:textColorHint="@color/text"
-        android:hint="@string/playlist_name"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:boxStrokeColor="@color/add_playlist_frame"
-        >
+        <ImageView
+            android:id="@+id/addedImage"
+            android:layout_width="@dimen/playlist_image_frame"
+            android:layout_height="@dimen/playlist_image_frame"
+            android:layout_marginTop="26dp"
+            app:layout_constraintTop_toBottomOf = "@id/back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/ic_add_image"
+            android:layout_gravity="center"
+            android:background="@drawable/frame"
+            android:gravity="center"
+            android:scaleType="centerInside">
+        </ImageView>
 
-        <EditText
-            android:id="@+id/input_playlist_name"
-            style="@style/AddingPlaylistAttr"
-            tools:text="GHbr"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_name"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:layout_constraintTop_toBottomOf = "@id/addedImage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:boxBackgroundColor="@color/background_not_main"
+            app:boxStrokeColor="@drawable/selector_box_stroke_color"
+            app:helperTextTextColor="@color/text"
+            app:hintTextColor="@color/text"
+            android:textCursorDrawable="@color/text"
+            android:layout_marginTop="32dp"
+            android:layout_width="328dp"
+            android:layout_height="56dp"
+            android:textColorHint="@color/text"
+            android:hint="@string/playlist_name"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_playlist_name"
+                style="@style/AddingPlaylistAttr"
+                tools:text="Мой плейлист"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            app:layout_constraintTop_toBottomOf = "@id/input_name"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:boxBackgroundColor="@color/background_not_main"
+            app:boxStrokeColor="@drawable/selector_box_stroke_color"
+            app:helperTextTextColor="@color/text"
+            app:hintTextColor="@color/text"
+            android:textCursorDrawable="@color/text"
+            android:layout_marginTop="@dimen/margin_frame"
+            android:layout_width="328dp"
+            android:layout_height="56dp"
+            android:textColorHint="@color/text"
+            android:hint="@string/playlist_description" >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_playlist_description"
+                style="@style/AddingPlaylistAttr"
+                tools:text="Мой плейлист"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/button_create_playlist"
+            android:layout_width="326dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf = "parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="17dp"
+            android:layout_marginStart="17dp"
+            android:layout_marginBottom="32dp"
+            android:text="@string/create"
+            android:textAllCaps="false"
+            app:cornerRadius="8dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:fontFamily="@font/ys_display_medium"
+            android:backgroundTint="@drawable/selector_button_color"
             />
-    </com.google.android.material.textfield.TextInputLayout>
-
-     <com.google.android.material.textfield.TextInputLayout
-
-         app:layout_constraintTop_toBottomOf = "@id/input_name"
-         app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintEnd_toEndOf="parent"
-         android:layout_marginTop="16dp"
-         android:layout_width="328dp"
-         android:layout_height="56dp"
-         android:textColorHint="@color/text"
-         android:hint="@string/playlist_description"
-         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-         app:boxStrokeColor="@color/add_playlist_frame"
-         >
-         <EditText
-             android:id="@+id/input_playlist_description"
-             style="@style/AddingPlaylistAttr" />
-
-     </com.google.android.material.textfield.TextInputLayout>
-    <Button
-        android:id="@+id/button_create_playlist"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf = "parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="17dp"
-        android:layout_marginStart="17dp"
-        android:layout_marginBottom="32dp"
-        android:text="@string/create"
-        android:textAllCaps="false"
-        app:cornerRadius="8dp"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:fontFamily="@font/ys_display_medium"
-        android:backgroundTint="@color/add_playlist_button"
-
-        />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

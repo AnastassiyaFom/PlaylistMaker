@@ -16,7 +16,7 @@ class NewPlaylistViewModel(
     private val context: Context
 ): ViewModel() {
 
-    private  var imageDir:Uri?=null
+
     fun addTrackToBD(playlist: Playlist) {
         playlistsInteractor.addNewPlaylist(playlist)
     }
@@ -43,16 +43,10 @@ class NewPlaylistViewModel(
         BitmapFactory
             .decodeStream(inputStream)
             .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
-        setImageDir(file.toUri())
+
 
     }
-    private fun setImageDir(uri: Uri) {
-        imageDir = uri
-    }
 
-    fun getImageDir(): Uri? {
-        return imageDir
-    }
 
 }
 

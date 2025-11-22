@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.library.ui.activity
 
-import android.annotation.SuppressLint
+
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,10 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView.ScaleType.*
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentAddingPlaylistBinding
 import com.practicum.playlistmaker.library.domain.Playlist
@@ -26,8 +30,8 @@ class PlaylistAddingFragment: Fragment() {
     private val viewModel: NewPlaylistViewModel by inject()
     private var albumName=""
     private var albumDescription=""
-    private var imageUri=""
-    private var isButtonActive = false
+    private var imageUri: Uri? =null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,11 +43,17 @@ class PlaylistAddingFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setButtonInactive()
+        binding.buttonCreatePlaylist.setEnabled(false)
         // Возврат в предыдущую активити или фрагмент
         binding.backFromAddingPlaylist.setOnClickListener {
             returnWithDialog()
+
         }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                returnWithDialog()
+            }
+        })
         // Для ввода имени альбома
         binding.inputPlaylistName.setText("")
         var nameTextWatcher = object : TextWatcher {
@@ -52,16 +62,16 @@ class PlaylistAddingFragment: Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 albumName = s?.toString() ?: ""
                 if (albumName.isNotEmpty()) {
-                    setButtonActive()
+                    binding.buttonCreatePlaylist.setEnabled(true)
                 } else {
-                    setButtonInactive()
+                    binding.buttonCreatePlaylist.setEnabled(false)
                 }
             }
         }
         binding.inputPlaylistName.addTextChangedListener(nameTextWatcher)
 
         // Для ввода описания альбома
-        binding.inputPlaylistName.setText("")
+        binding.inputPlaylistDescription.setText("")
         var descriptionTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
@@ -69,7 +79,7 @@ class PlaylistAddingFragment: Fragment() {
                 albumDescription = s?.toString() ?: ""
             }
         }
-        binding.inputPlaylistName.addTextChangedListener(descriptionTextWatcher)
+        binding.inputPlaylistDescription.addTextChangedListener(descriptionTextWatcher)
 
         //регистрируем событие, которое вызывает photo picker
         val pickMedia =
@@ -77,9 +87,9 @@ class PlaylistAddingFragment: Fragment() {
                 //обрабатываем событие выбора пользователем фотографии
                 if (uri != null) {
                     binding.addedImage.setImageURI(uri)
-                    imageUri= uri.toString()
+                    imageUri= uri
                     binding.addedImage.setScaleType( CENTER_CROP)
-                    viewModel.saveImageToPrivateStorage(uri, albumName)
+
                 } else {
                     Log.d("PhotoPicker", "No media selected")
                 }
@@ -91,42 +101,57 @@ class PlaylistAddingFragment: Fragment() {
 
         //  Создать альбом
         binding.buttonCreatePlaylist.setOnClickListener {
-            if (isButtonActive) {
-                viewModel.addTrackToBD(
-                    Playlist(
-                    playlstName = albumName,
-                    playlistDescription = albumDescription ,
-                    playlistImageDir =viewModel.getImageDir())
-                )
+            if (binding.buttonCreatePlaylist.isEnabled() && albumName.isNotEmpty()) {
+                savePlaylist()
+
                 findNavController().navigateUp()
+
             } else {
                 TODO("???")
             }
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    private fun savePlaylist() {
+        if (albumName.isNotEmpty()) {
+            viewModel.addTrackToBD(
+                Playlist(
+                    playlstName = albumName,
+                    playlistDescription = albumDescription,
+                    playlistImageDir = imageUri
+                )
+            )
+            if (imageUri!=null){
+                viewModel.saveImageToPrivateStorage(imageUri!!, albumName)
+            }
 
-    }
-    @SuppressLint("ResourceAsColor")
-    private fun setButtonInactive(){
-        binding.buttonCreatePlaylist.setBackgroundColor(R.color.add_image_frame)
-        isButtonActive = false
-    }
-    @SuppressLint("ResourceAsColor")
-    private fun setButtonActive(){
-        binding.buttonCreatePlaylist.setBackgroundColor(R.color.item_selected)
-        isButtonActive = true
-    }
-
-    private fun returnWithDialog(){
-        //TODO("Диалог на сохранение изменений")
-
-        findNavController().navigateUp()
-
-        //bundleOf(PlaylistAddingFragment.ARGS_PLAYLIST to item)
+            binding.buttonCreatePlaylist.let {
+                Snackbar.make(it, "Плейлист $albumName создан", Snackbar.LENGTH_LONG).show()
+            }
+        }
     }
 
+
+
+    private fun   returnWithDialog()
+    {
+        if (albumName.isNotEmpty()|| albumDescription.isNotEmpty()||imageUri.toString().isNotEmpty()){
+            showDialog()
+        }
+
+    }
+
+    private fun   showDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(requireContext().getString(R.string.creating_playlist_dialog_hadder))
+            .setMessage(requireContext().getString(R.string.creating_playlist_dialog_message))
+            .setNeutralButton(requireContext().getString(R.string.cancel)) { dialog, which ->
+            }
+            .setPositiveButton(requireContext().getString(R.string.finish)) { dialog, which ->
+                savePlaylist()
+                findNavController().navigateUp()
+            }
+            .show()
+    }
 
 }

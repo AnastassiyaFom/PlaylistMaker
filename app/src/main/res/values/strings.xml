@@ -35,7 +35,10 @@
     <string name="one_track">трек</string>
     <string name="two_tracks">трека</string>
     <string name="many_tracks">треков</string>
-
+    <string name="creating_playlist_dialog_hadder">Завершить создание плейлиста?</string>
+    <string name="creating_playlist_dialog_message">Завершить создание плейлиста?</string>
+    <string name="cancel">Отмена</string>
+    <string name="finish">Завершить</string>
 
 
 </resources>
