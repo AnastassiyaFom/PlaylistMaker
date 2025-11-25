@@ -73,7 +73,10 @@ class PlaylistsFragment : Fragment() {
         binding.errorNoPlaylists.visibility=View.VISIBLE
         binding.recyclerView.visibility=View.GONE
     }
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     companion object {
         fun newInstance() = PlaylistsFragment().apply {
         }

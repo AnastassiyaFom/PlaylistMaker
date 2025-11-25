@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx) // поддержка корутин
     kapt(libs.androidx.room.compiler)
-    implementation("com.google.android.material:material:1.9.0")
+    implementation(libs.material)
+
 
 }

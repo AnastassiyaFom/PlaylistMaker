@@ -9,7 +9,7 @@
     android:layout_marginBottom="@dimen/margin"
     android:layout_marginStart="13dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/image"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,6 +19,7 @@
         android:src = "@drawable/placeholder102"
         android:scaleType="centerInside"
         android:layout_gravity="center"
+        app:shapeAppearanceOverlay="@style/RoundedCorners_2dp"
         />
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"

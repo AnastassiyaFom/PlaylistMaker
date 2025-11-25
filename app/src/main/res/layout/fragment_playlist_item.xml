@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:backgroundTint="@color/background_screan">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/image"
         android:layout_width="160dp"
         android:layout_height="160dp"
@@ -15,6 +16,7 @@
         android:src = "@drawable/placeholder102"
         android:scaleType="centerInside"
         android:layout_gravity="center"
+        app:shapeAppearanceOverlay="@style/RoundedCorners_8dp"
         />
     <TextView
         android:id="@+id/name"

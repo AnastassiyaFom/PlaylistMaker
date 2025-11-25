@@ -29,10 +29,6 @@ class NewPlaylistViewModel(
         val readFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
         contentResolver.takePersistableUriPermission(uri, readFlags)
 
-        // передаём необходимый флаг на запись
-        val writeFlags: Int = Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        contentResolver.takePersistableUriPermission(uri, writeFlags)
-
         //создаём экземпляр класса File, который указывает на нужный каталог
         val filePath: File = File(
             context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES),

@@ -89,10 +89,14 @@ class PlaylistAddingFragment: Fragment() {
                     binding.addedImage.setImageURI(uri)
                     imageUri= uri
                     binding.addedImage.setScaleType( CENTER_CROP)
+
                 } else {
                     Log.d("PhotoPicker", "No media selected")
                 }
             }
+
+
+        binding.addedImage.setBackgroundDrawable(requireContext().getDrawable(R.drawable.frame))
         //по нажатию на пространство addedImage запускаем photo picker
         binding.addedImage.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -145,10 +149,13 @@ class PlaylistAddingFragment: Fragment() {
             .setNeutralButton(requireContext().getString(R.string.cancel)) { dialog, which ->
             }
             .setPositiveButton(requireContext().getString(R.string.finish)) { dialog, which ->
-                savePlaylist()
+
                 findNavController().navigateUp()
             }
             .show()
     }
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

@@ -70,12 +70,12 @@ import kotlinx.coroutines.runBlocking
 
 
 class SelectedTracksRepositoryImpl (
-    private val appDatabase: SelectedTracksDao,
+    private val selectedTrackTable: SelectedTracksDao,
     private val trackDbConvertor: SelectedTrackDbConvertor,
 ) : SelectedTracksRepository {
 
     override fun getSelectedTracks(): Flow<List<Track>> = flow {
-        val tracks = appDatabase.getTracksSortedByDate()
+        val tracks = selectedTrackTable.getTracksSortedByDate()
         emit(convertFromEntityToTrack(tracks))
     }
 
@@ -91,19 +91,19 @@ class SelectedTracksRepositoryImpl (
 
     override  fun insertTrack(track:Track,isInFavorites:Boolean) {
         runBlocking {
-            appDatabase.insertTrack(convertFromTrackToEntity(track,isInFavorites))
+            selectedTrackTable.insertTrack(convertFromTrackToEntity(track,isInFavorites))
         }
     }
 
     override fun deleteTrackFromFavorites(track:Track) {
         runBlocking {
 
-                appDatabase.deleteTrack(trackDbConvertor.map(track))
+                selectedTrackTable.deleteTrack(trackDbConvertor.map(track))
         }
     }
     override fun deleteTrackFromDb(track:Track) {
         runBlocking {
-                appDatabase.deleteTrack(trackDbConvertor.map(track))
+                selectedTrackTable.deleteTrack(trackDbConvertor.map(track))
 
         }
     }
@@ -111,7 +111,7 @@ class SelectedTracksRepositoryImpl (
     override fun getTrackById(id:Int):Track?{
         var track:SelectedTrackEntity?
         runBlocking {
-             track = appDatabase.getTrackById(id)
+             track = selectedTrackTable.getTrackById(id)
         }
         if (track == null) return null
         return convertFromEntityToTrack(track!!)

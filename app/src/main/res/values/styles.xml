@@ -135,5 +135,11 @@
         <item name="android:singleLine">true</item>
         <item name="android:textCursorDrawable">@color/text</item>
     </style>
+    <style name="RoundedCorners_8dp">
+        <item name="cornerSize">8dp</item>
+    </style>
+    <style name="RoundedCorners_2dp">
+        <item name="cornerSize">2dp</item>
+    </style>
 
 </resources>
