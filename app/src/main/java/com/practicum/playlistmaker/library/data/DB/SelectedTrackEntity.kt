@@ -7,7 +7,6 @@ import java.util.Date
 @Entity(tableName = "selected_track_table")
 data class SelectedTrackEntity (
     @PrimaryKey
-
     val trackId:Int,
     val trackName: String,
     val artistName: String,
@@ -19,6 +18,8 @@ data class SelectedTrackEntity (
     val primaryGenreName:String,
     val country:String,
     val previewUrl:String,
-    val dateAdded: Long = Date().time
+    val dateAdded: Long = Date().time,
+
+
 )
 

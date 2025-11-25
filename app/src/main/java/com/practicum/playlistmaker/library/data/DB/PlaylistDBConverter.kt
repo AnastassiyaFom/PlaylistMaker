@@ -5,20 +5,21 @@ import com.practicum.playlistmaker.library.domain.Playlist
 
 
 class PlaylistDBConverter {
-    fun map(playlist: Playlist): PlaylistEntity {
+    fun map(playlist: Playlist?): PlaylistEntity {
 
         return PlaylistEntity(
-            playlstName=playlist.playlstName,
-        playlistDescription=playlist.playlistDescription,
-        playlistImageDir=playlist.playlistImageDir?.toString()?:"",
-        tracks=playlist.tracks.toString(),
-        tracksCount=playlist.tracksCount
+            playlstName=playlist?.playlstName?:"",
+        playlistDescription=playlist?.playlistDescription?:"",
+        playlistImageDir=playlist?.playlistImageDir?.toString()?:"",
+        tracks=playlist?.tracks?:"",
+        tracksCount=playlist?.tracksCount?:0
         )
 
     }
 
     fun map(playlist: PlaylistEntity?): Playlist{
         return Playlist(
+            id = playlist?.playlistId?:-1,
             playlstName =playlist?.playlstName?:"",
             playlistDescription =playlist?.playlistDescription?:"",
             playlistImageDir =playlist?.playlistImageDir?.toUri(),
@@ -26,4 +27,5 @@ class PlaylistDBConverter {
             tracksCount =playlist?.tracksCount?:0
         )
     }
+
 }

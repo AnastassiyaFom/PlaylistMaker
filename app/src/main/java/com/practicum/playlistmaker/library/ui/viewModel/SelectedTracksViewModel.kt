@@ -23,7 +23,7 @@ class SelectedTracksViewModel(
     fun getData(){
         viewModelScope.launch {
             selectedTrackInteractor
-                .selectedTracks()
+                .getSelectedTracks()
                 .collect { tracks ->
                     processResult(tracks)
                 }

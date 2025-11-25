@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.library.ui.viewModel
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -17,11 +18,20 @@ class NewPlaylistViewModel(
 ): ViewModel() {
 
 
-    fun addTrackToBD(playlist: Playlist) {
+    fun addPlaylistToBD(playlist: Playlist) {
+
         playlistsInteractor.addNewPlaylist(playlist)
     }
 
     fun saveImageToPrivateStorage(uri: Uri, albumName:String) {
+        val contentResolver = context.contentResolver
+        // передаём необходимый флаг на чтение
+        val readFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        contentResolver.takePersistableUriPermission(uri, readFlags)
+
+        // передаём необходимый флаг на запись
+        val writeFlags: Int = Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        contentResolver.takePersistableUriPermission(uri, writeFlags)
 
         //создаём экземпляр класса File, который указывает на нужный каталог
         val filePath: File = File(
@@ -43,8 +53,6 @@ class NewPlaylistViewModel(
         BitmapFactory
             .decodeStream(inputStream)
             .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
-
-
     }
 
 

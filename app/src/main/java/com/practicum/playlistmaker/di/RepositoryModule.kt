@@ -2,7 +2,12 @@ package com.practicum.playlistmaker.di
 
 import com.practicum.playlistmaker.library.data.DB.AppDatabase
 import com.practicum.playlistmaker.library.data.DB.PlaylistDBConverter
+import com.practicum.playlistmaker.library.data.DB.PlaylistTrackDAO
+import com.practicum.playlistmaker.library.data.DB.PlaylistsDao
+import com.practicum.playlistmaker.library.data.DB.SelectedTrackDbConvertor
+import com.practicum.playlistmaker.library.data.DB.SelectedTracksDao
 import com.practicum.playlistmaker.library.data.DB.TrackDbConvertor
+import com.practicum.playlistmaker.library.data.DB.TracksDao
 import com.practicum.playlistmaker.library.data.PlaylistsRepositoryImpl
 import com.practicum.playlistmaker.library.data.SelectedTracksRepositoryImpl
 import com.practicum.playlistmaker.library.domain.db.PlaylistsRepository
@@ -20,7 +25,6 @@ import com.practicum.playlistmaker.settings.domain.SharingRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import com.practicum.playlistmaker.library.data.DB.SelectedTracksDao as SelectedTracksDao
 
 val repositoryModule = module {
 
@@ -41,20 +45,27 @@ val repositoryModule = module {
     single<ExternalNavigator>{
         ExternalNavigatorImpl(androidContext())
     }
-    factory { TrackDbConvertor() }
+    factory <SelectedTrackDbConvertor>{ SelectedTrackDbConvertor() }
 
-    factory{ PlaylistDBConverter() }
+    factory <TrackDbConvertor>{ TrackDbConvertor() }
 
-    factory { get<AppDatabase>().selectedTracksDao() }
+    factory <PlaylistDBConverter>{ PlaylistDBConverter() }
 
-    factory { get<AppDatabase>().playlistsDao() }
+    factory <SelectedTracksDao> { get<AppDatabase>().selectedTracksDao() }
+
+    factory <PlaylistsDao>{ get<AppDatabase>().playlistsDao() }
+
+    factory <TracksDao>{ get<AppDatabase>().tracksDao() }
+
+    factory <PlaylistTrackDAO>{ get<AppDatabase>().playlistTrackDao() }
+
 
     factory <SelectedTracksRepository> {
         SelectedTracksRepositoryImpl(get(),get())
     }
 
     factory <PlaylistsRepository> {
-        PlaylistsRepositoryImpl(get(),get())
+        PlaylistsRepositoryImpl(get(), get(), get(), get(), get() )
     }
 
 }

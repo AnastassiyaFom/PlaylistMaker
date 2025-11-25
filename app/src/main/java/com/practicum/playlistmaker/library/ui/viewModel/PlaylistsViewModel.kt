@@ -15,7 +15,7 @@ class PlaylistsViewModel(
     private val stateLiveData = MutableLiveData<PlaylistsState>()
     fun observeState(): LiveData<PlaylistsState> = stateLiveData
 
-    init{
+    init {
         getData()
     }
 

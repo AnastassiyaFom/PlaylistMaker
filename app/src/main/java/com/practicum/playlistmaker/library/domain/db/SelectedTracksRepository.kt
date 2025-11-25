@@ -4,8 +4,10 @@ import com.practicum.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
 
 interface SelectedTracksRepository {
-    fun selectedTracks(): Flow<List<Track>>
-    fun insertTrack(track: Track)
-    fun deleteTrack(track:Track)
+    fun getSelectedTracks(): Flow<List<Track>>
+    fun insertTrack(track: Track,isInFavorites:Boolean)
+    //fun deleteTrack(track:Track)
+    fun deleteTrackFromFavorites(track:Track)
     fun getTrackById(id:Int):Track?
+    fun deleteTrackFromDb(track:Track)
 }

@@ -89,7 +89,6 @@ class PlaylistAddingFragment: Fragment() {
                     binding.addedImage.setImageURI(uri)
                     imageUri= uri
                     binding.addedImage.setScaleType( CENTER_CROP)
-
                 } else {
                     Log.d("PhotoPicker", "No media selected")
                 }
@@ -103,9 +102,7 @@ class PlaylistAddingFragment: Fragment() {
         binding.buttonCreatePlaylist.setOnClickListener {
             if (binding.buttonCreatePlaylist.isEnabled() && albumName.isNotEmpty()) {
                 savePlaylist()
-
                 findNavController().navigateUp()
-
             } else {
                 TODO("???")
             }
@@ -114,7 +111,7 @@ class PlaylistAddingFragment: Fragment() {
 
     private fun savePlaylist() {
         if (albumName.isNotEmpty()) {
-            viewModel.addTrackToBD(
+            viewModel.addPlaylistToBD(
                 Playlist(
                     playlstName = albumName,
                     playlistDescription = albumDescription,

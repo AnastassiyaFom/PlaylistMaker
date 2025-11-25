@@ -14,6 +14,8 @@ import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.library.domain.Playlist
 import com.practicum.playlistmaker.library.ui.viewModel.PlaylistsState
 import com.practicum.playlistmaker.library.ui.viewModel.PlaylistsViewModel
+import com.practicum.playlistmaker.search.ui.view.OnItemClickListener
+import com.practicum.playlistmaker.search.ui.view.TracksAdapter
 import org.koin.android.ext.android.inject
 
 class PlaylistsFragment : Fragment() {

@@ -57,7 +57,7 @@
             android:textCursorDrawable="@color/text"
             android:layout_marginTop="32dp"
             android:layout_width="328dp"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:textColorHint="@color/text"
             android:hint="@string/playlist_name"
             >
@@ -81,7 +81,7 @@
             android:textCursorDrawable="@color/text"
             android:layout_marginTop="@dimen/margin_frame"
             android:layout_width="328dp"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:textColorHint="@color/text"
             android:hint="@string/playlist_description" >
 

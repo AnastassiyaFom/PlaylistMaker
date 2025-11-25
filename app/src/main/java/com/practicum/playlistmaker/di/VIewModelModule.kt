@@ -17,7 +17,7 @@ val viewModuleModule = module {
     }
 
     factory{
-        PlayerViewModel (get(), get())
+        PlayerViewModel (get(), get(),get())
     }
     factory{
         SettingsViewModel(get(),get())

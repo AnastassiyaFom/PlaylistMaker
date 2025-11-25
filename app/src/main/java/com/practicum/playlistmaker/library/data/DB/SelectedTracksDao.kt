@@ -15,10 +15,12 @@ interface SelectedTracksDao  {
     @Delete (entity = SelectedTrackEntity::class)
     suspend fun deleteTrack(track: SelectedTrackEntity)
 
+
     @Query("SELECT * FROM selected_track_table ORDER BY dateAdded DESC")
     suspend fun getTracksSortedByDate(): List<SelectedTrackEntity>
 
-    @Query("SELECT * FROM selected_track_table WHERE trackId = :id")
+
+    @Query("SELECT * FROM selected_track_table WHERE trackId = :id ")
     suspend fun getTrackById(id:Int): SelectedTrackEntity?
 
 }
