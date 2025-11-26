@@ -22,6 +22,10 @@
     <color name="button_library">#1A1B22</color>
     <color name="progress_bar">#3772E7</color>
     <color name="item_selected">#3772E7</color>
+    <color name="add_image_frame">#AEAFB4</color>
+    <color name="add_playlist_frame">#AEAFB4</color>
+    <color name="add_playlist_button">#3772E7</color>
+    <color name="rounder">#E6E8EB</color>
 
 
 </resources>

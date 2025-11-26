@@ -19,7 +19,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <TextView
-            android:id="@+id/error_no_selected_tracks"
+            android:id="@+id/error_no_playlists"
             style="@style/ErrorsTextView"
             android:layout_marginTop="106dp"
             android:text="@string/no_selected_tracks"

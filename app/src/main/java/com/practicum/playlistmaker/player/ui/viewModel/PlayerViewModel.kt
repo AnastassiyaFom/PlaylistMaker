@@ -1,11 +1,14 @@
 package com.practicum.playlistmaker.player.ui.viewModel
 
 import android.media.MediaPlayer
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.library.domain.Playlist
+import com.practicum.playlistmaker.library.domain.db.PlaylistsInteractor
 import com.practicum.playlistmaker.library.domain.db.SelectedTracksInteractor
-
+import com.practicum.playlistmaker.library.ui.viewModel.PlaylistsState
 import com.practicum.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -14,10 +17,18 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel ( private val mediaPlayer: MediaPlayer,
-                        private val dbInteractor: SelectedTracksInteractor
+                        private val dbInteractor: SelectedTracksInteractor,
+                        private val playlistsInteractor: PlaylistsInteractor,
+
+
 ): ViewModel(){
 
+
+    private val stateLiveData = MutableLiveData<PlaylistsState>()
+    fun observePlaylistsState(): LiveData<PlaylistsState> = stateLiveData
+
     private var track:Track=Track()
+
     private val checkedTrack = MutableLiveData<Track>()
     fun observeCheckedTrack(): MutableLiveData<Track> = checkedTrack
 
@@ -25,6 +36,12 @@ class PlayerViewModel ( private val mediaPlayer: MediaPlayer,
     fun observePlayerState(): MutableLiveData<PlayerState> = playerStateLiveData
 
     private var timerJob: Job? = null
+
+    private val pl:MutableList<Playlist> = mutableListOf()
+
+    init {
+        getPlaylists()
+    }
 
     // Методы для трека
     fun loadTrack(trackToPlay: Track):Track {
@@ -38,7 +55,7 @@ class PlayerViewModel ( private val mediaPlayer: MediaPlayer,
     }
 
     fun addToFavorites(track:Track){
-        dbInteractor.insertTrack(track)
+        dbInteractor.insertTrack(track,true)
     }
 
     fun deleteFromFavorites(track:Track){
@@ -113,6 +130,38 @@ class PlayerViewModel ( private val mediaPlayer: MediaPlayer,
     private fun resetTimer() {
         timerJob?.cancel()
         playerStateLiveData.postValue(PlayerState.Prepared())
+    }
+
+    fun getPlaylists() {
+        viewModelScope.launch {
+            playlistsInteractor
+                .getAllPlaylists()
+                .collect { playlists ->
+                    processResult(playlists)
+                }
+        }
+    }
+    private fun renderState(state: PlaylistsState) {
+        stateLiveData.postValue(state)
+    }
+
+    private fun processResult(playlists: List<Playlist>) {
+        if (playlists.isEmpty()){
+            renderState(PlaylistsState.Empty)
+        }
+        else
+        {
+            renderState(PlaylistsState.Content(playlists))
+        }
+    }
+
+    fun addTrackToPlaylist(checkedTrack: Track, playlist: Playlist) {
+        playlistsInteractor.addTrackToPlaylist(checkedTrack,playlist)
+
+    }
+
+    fun isTrackInPlaylist(checkedTrack: Track, playlist: Playlist): Boolean {
+        return playlistsInteractor.isTrackInPlaylist(checkedTrack.trackId, playlist.id)
     }
 
 

@@ -58,9 +58,10 @@ class SelectedTracksRepositoryImpl (
 
 package com.practicum.playlistmaker.library.data
 
+
 import com.practicum.playlistmaker.library.data.DB.SelectedTrackEntity
 import com.practicum.playlistmaker.library.data.DB.SelectedTracksDao
-import com.practicum.playlistmaker.library.data.DB.TrackDbConvertor
+import com.practicum.playlistmaker.library.data.DB.SelectedTrackDbConvertor
 import com.practicum.playlistmaker.library.domain.db.SelectedTracksRepository
 import com.practicum.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
@@ -69,12 +70,12 @@ import kotlinx.coroutines.runBlocking
 
 
 class SelectedTracksRepositoryImpl (
-    private val appDatabase: SelectedTracksDao,
-    private val trackDbConvertor: TrackDbConvertor,
+    private val selectedTrackTable: SelectedTracksDao,
+    private val trackDbConvertor: SelectedTrackDbConvertor,
 ) : SelectedTracksRepository {
 
-    override fun selectedTracks(): Flow<List<Track>> = flow {
-        val tracks = appDatabase.getTracksSortedByDate()
+    override fun getSelectedTracks(): Flow<List<Track>> = flow {
+        val tracks = selectedTrackTable.getTracksSortedByDate()
         emit(convertFromEntityToTrack(tracks))
     }
 
@@ -84,28 +85,37 @@ class SelectedTracksRepositoryImpl (
     private fun convertFromEntityToTrack(track: SelectedTrackEntity): Track {
         return trackDbConvertor.map(track)
     }
-    private fun convertFromTrackToEntity(track: Track):SelectedTrackEntity  {
+    private fun convertFromTrackToEntity(track: Track,isInFavorites:Boolean):SelectedTrackEntity  {
         return trackDbConvertor.map(track)
     }
 
-    override  fun insertTrack(track:Track) {
+    override  fun insertTrack(track:Track,isInFavorites:Boolean) {
         runBlocking {
-            appDatabase.insertTrack(convertFromTrackToEntity(track))
+            selectedTrackTable.insertTrack(convertFromTrackToEntity(track,isInFavorites))
         }
     }
 
-    override fun deleteTrack(track:Track) {
+    override fun deleteTrackFromFavorites(track:Track) {
         runBlocking {
-            appDatabase.deleteTrack(convertFromTrackToEntity(track))
+
+                selectedTrackTable.deleteTrack(trackDbConvertor.map(track))
         }
     }
+    override fun deleteTrackFromDb(track:Track) {
+        runBlocking {
+                selectedTrackTable.deleteTrack(trackDbConvertor.map(track))
+
+        }
+    }
+
     override fun getTrackById(id:Int):Track?{
         var track:SelectedTrackEntity?
         runBlocking {
-             track = appDatabase.getTrackById(id)
+             track = selectedTrackTable.getTrackById(id)
         }
         if (track == null) return null
         return convertFromEntityToTrack(track!!)
     }
+
 
 }

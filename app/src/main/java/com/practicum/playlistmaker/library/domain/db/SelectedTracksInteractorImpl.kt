@@ -7,15 +7,15 @@ class SelectedTracksInteractorImpl (
     private val selectedTracksRepository: SelectedTracksRepository
 ) : SelectedTracksInteractor {
 
-    override fun selectedTracks(): Flow<List<Track>> {
-        return selectedTracksRepository.selectedTracks()
+    override fun getSelectedTracks(): Flow<List<Track>> {
+        return selectedTracksRepository.getSelectedTracks()
     }
-    override fun insertTrack(track: Track) {
-        selectedTracksRepository.insertTrack(track)
+    override fun insertTrack(track: Track, isInFavorites:Boolean) {
+        selectedTracksRepository.insertTrack(track, isInFavorites)
     }
 
     override fun deleteTrack(track: Track) {
-        selectedTracksRepository.deleteTrack(track)
+        selectedTracksRepository.deleteTrackFromFavorites(track)
     }
 
     override fun getTrackById(id: Int): Track? {

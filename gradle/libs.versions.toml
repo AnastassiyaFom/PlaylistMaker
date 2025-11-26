@@ -26,6 +26,7 @@ retrofitVersion = "2.9.0"
 
 roomRuntime = "2.8.3"
 viewpager2 = "1.0.0"
+litert = "2.0.3"
 
 
 [libraries]
@@ -55,6 +56,7 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 retrofit2-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+litert = { group = "com.google.ai.edge.litert", name = "litert", version.ref = "litert" }
 
 
 

@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.player.ui.activity
 
+import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -7,22 +8,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
+import com.practicum.playlistmaker.library.domain.Playlist
+import com.practicum.playlistmaker.library.ui.activity.PlaylistsAdapter
+import com.practicum.playlistmaker.library.ui.viewModel.PlaylistsState
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerState
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.Track
+import com.practicum.playlistmaker.search.ui.view.OnItemClickListener
+import com.practicum.playlistmaker.utils.debounce
+
 import org.koin.android.ext.android.inject
 
 class PlayerFragment : Fragment() {
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
-
+    private lateinit var onPlaylistClickDebounce: (Playlist) -> Unit
     private val viewModel : PlayerViewModel by inject()
     private  var checkedTrack: Track =Track()
+    private  var playlists: MutableList<Playlist> = mutableListOf()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -30,6 +42,7 @@ class PlayerFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -37,6 +50,11 @@ class PlayerFragment : Fragment() {
             checkedTrack=it
         }
         checkedTrack = viewModel.loadTrack(requireArguments().getParcelable(ARGS_TRACK)?:Track())
+
+
+        viewModel.observePlaylistsState().observe(viewLifecycleOwner) {
+            render(it)
+        }
 
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
             setPlayButtonIcon(it.isButtonPlay)
@@ -77,7 +95,148 @@ class PlayerFragment : Fragment() {
 
         }
 
-        val artworkUrl512: String = checkedTrack.artworkUrl500.toString()
+        showTrackData()
+
+        // Воспроизводим трек
+        binding.playButton.setOnClickListener {
+            viewModel.onPlayButtonClicked()
+        }
+
+        // Для выбора плейлиста
+        showBottomSheet()
+    }
+
+
+
+    private fun showBottomSheet() {
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.standardBottomSheet)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.visibility = View.GONE
+                    }
+                    else -> {
+                        binding.overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+
+        binding.addToLibrary.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            viewModel.getPlaylists()
+        }
+
+        binding.newPlaylist.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_playerFragment_to_playlistAddingFragment
+            )
+
+        }
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        onPlaylistClickDebounce = debounce<Playlist>(
+            CLICK_DEBOUNCE_DELAY,
+            viewLifecycleOwner.lifecycleScope,
+            false
+        ) { playlist ->
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            addTrackToPlaylist(playlist)
+        }
+
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onPause()
+    }
+
+    private fun enableButton(isEnabled: Boolean) {
+        binding.playButton.isEnabled = isEnabled
+    }
+
+    private fun setPlayButtonIcon(isButtonPlay: Boolean) {
+        if (isButtonPlay){
+            binding.playButton.setImageResource(R.drawable.play_button_play)
+        } else {
+            binding.playButton.setImageResource(R.drawable.play_button_pause)
+        }
+    }
+
+    private fun setLikeButtonImage(isTrackInFavorites: Boolean) {
+        if (isTrackInFavorites){
+            //удалить трек из избранного
+            binding.like.setImageResource(R.drawable.like_selected)
+        }
+        else {
+            //добавить трек в избранное
+            binding.like.setImageResource(R.drawable.like_unselected)
+        }
+    }
+
+
+    private fun dpToPixel(dp: Float): Int {
+        val metrics: DisplayMetrics = Resources.getSystem().getDisplayMetrics()
+        val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
+        return Math.round(px).toInt()
+    }
+
+
+    private fun addTrackToPlaylist (playlist:Playlist){
+        val isTrackInPlaylist: Boolean = viewModel.isTrackInPlaylist(checkedTrack, playlist)
+        binding.recyclerView.let {
+            if (isTrackInPlaylist) {
+                Snackbar.make(
+                    it,
+                    "Трек уже добавлен в плейлист ${playlist.playlstName}",
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
+            else{
+                viewModel.addTrackToPlaylist(checkedTrack, playlist)
+                Snackbar.make(
+                    it,
+                    "Добавлено в плейлист ${playlist.playlstName}",
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getPlaylists()
+    }
+    private fun render(state: PlaylistsState?) {
+        when (state){
+            is PlaylistsState.Empty -> showEmpty()
+            is PlaylistsState.Content -> showContent(state.playlists)
+            else -> showEmpty()
+        }
+    }
+    private fun showContent(playlists: List<Playlist>) {
+        binding.recyclerView.visibility=View.VISIBLE
+        binding.recyclerView.adapter =
+            PlaylistAddingTrackAdapter(playlists, object : OnPlaylistItemClickListener {
+                override fun onItemClick(position: Int) {
+                    onPlaylistClickDebounce(playlists[position])
+                }
+            })
+    }
+
+    private fun showEmpty() {
+        binding.recyclerView.visibility=View.GONE
+    }
+
+    private fun showTrackData() {
+
+        val artworkUrl512: String = checkedTrack.artworkUrl500
         Glide.with(requireContext())
             .load(artworkUrl512)
             .placeholder(R.drawable.album_placeholder_512)
@@ -115,47 +274,10 @@ class PlayerFragment : Fragment() {
             binding.countryData.text = checkedTrack.country
             binding.countryText.visibility = View.VISIBLE
         }
-
-        // Воспроизводим трек
-        binding.playButton.setOnClickListener {
-            viewModel.onPlayButtonClicked()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.onPause()
-    }
-
-    private fun enableButton(isEnabled: Boolean) {
-        binding.playButton.isEnabled = isEnabled
-    }
-
-    private fun setPlayButtonIcon(isButtonPlay: Boolean) {
-        if (isButtonPlay){
-            binding.playButton.setImageResource(R.drawable.play_button_play)
-        } else {
-            binding.playButton.setImageResource(R.drawable.play_button_pause)
-        }
-    }
-
-    private fun setLikeButtonImage(isTrackInFavorites: Boolean) {
-        if (isTrackInFavorites){
-            //удалить трек из избранного
-            binding.like.setImageResource(R.drawable.like_selected)
-        }
-        else {
-            //добавить трек в избранное
-            binding.like.setImageResource(R.drawable.like_unselected)
-        }
-    }
-    private fun dpToPixel(dp: Float): Int {
-        val metrics: DisplayMetrics = Resources.getSystem().getDisplayMetrics()
-        val px = dp * (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT)
-        return Math.round(px).toInt()
     }
 
     companion object {
         const val ARGS_TRACK = "track"
+        const val CLICK_DEBOUNCE_DELAY=500L
     }
 }

@@ -5,10 +5,13 @@ import androidx.room.RoomDatabase
 
 
 
-@Database(version = 1, entities = [SelectedTrackEntity::class])
+@Database(version = 1, entities = [SelectedTrackEntity::class, PlaylistEntity::class,TrackEntity::class, PlaylistTrackEntity::class])
 abstract class AppDatabase : RoomDatabase(){
 
     abstract fun selectedTracksDao() : SelectedTracksDao
+    abstract fun playlistsDao() : PlaylistsDao
+    abstract fun tracksDao() : TracksDao
+    abstract fun playlistTrackDao() : PlaylistTrackDAO
 
 }
 
