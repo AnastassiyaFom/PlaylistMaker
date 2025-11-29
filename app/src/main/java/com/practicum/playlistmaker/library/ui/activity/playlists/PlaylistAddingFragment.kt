@@ -1,11 +1,11 @@
-package com.practicum.playlistmaker.library.ui.activity
+package com.practicum.playlistmaker.library.ui.activity.playlists
 
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,18 +19,17 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentAddingPlaylistBinding
-import com.practicum.playlistmaker.library.domain.Playlist
-import com.practicum.playlistmaker.library.ui.viewModel.NewPlaylistViewModel
+import com.practicum.playlistmaker.library.ui.viewModel.playlists.PlaylistAddingViewModel
 import org.koin.android.ext.android.inject
 
 
 class PlaylistAddingFragment: Fragment() {
     private var _binding: FragmentAddingPlaylistBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: NewPlaylistViewModel by inject()
-    private var albumName=""
-    private var albumDescription=""
-    private var imageUri: Uri? =null
+    private val viewModel: PlaylistAddingViewModel by inject()
+    private var previousFragment = ADDING_FRAGMENT
+    private var playlistId = -1
+
 
 
     override fun onCreateView(
@@ -38,45 +37,68 @@ class PlaylistAddingFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddingPlaylistBinding.inflate(inflater, container, false)
+        previousFragment = requireArguments().getString(PREVIOUS_FRAGMENT)?:ADDING_FRAGMENT
+        playlistId = requireArguments().getInt(PLAYLIST_ID)?:-1
+        viewModel.setPlaylistData(previousFragment,playlistId)
         return binding.root
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        when (previousFragment) {
+            PLAYLIST_SCREEN_FRAGMENT->{
+                val uri = viewModel.getImageUri()
+                if (uri!=null && uri.toString().isNotEmpty()) setImage(uri)
+                else binding.addedImage.setImageDrawable(viewModel.getImageDrawable())
+            }
+        }
+        binding.tittle.setText(viewModel.getFragmentHadder())
+        binding.buttonCreatePlaylist.setText(viewModel.getSaveButtonText())
         binding.buttonCreatePlaylist.setEnabled(false)
         // Возврат в предыдущую активити или фрагмент
         binding.backFromAddingPlaylist.setOnClickListener {
             returnWithDialog()
-
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                returnWithDialog()
+                when (previousFragment){
+                    PLAYLIST_SCREEN_FRAGMENT->findNavController().navigateUp()
+                        else-> returnWithDialog()
+                }
             }
         })
         // Для ввода имени альбома
-        binding.inputPlaylistName.setText("")
+        binding.inputPlaylistName.setText(viewModel.getAlbumName())
+        if (viewModel.getAlbumName().isNotEmpty()) {
+            binding.buttonCreatePlaylist.setEnabled(true)
+        } else {
+            binding.buttonCreatePlaylist.setEnabled(false)
+        }
         var nameTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                albumName = s?.toString() ?: ""
-                if (albumName.isNotEmpty()) {
+                val albumName = s?.toString() ?: ""
+                viewModel.setAlbumName(albumName)
+               if (albumName.isNotEmpty()) {
                     binding.buttonCreatePlaylist.setEnabled(true)
                 } else {
                     binding.buttonCreatePlaylist.setEnabled(false)
                 }
+
             }
         }
         binding.inputPlaylistName.addTextChangedListener(nameTextWatcher)
 
         // Для ввода описания альбома
-        binding.inputPlaylistDescription.setText("")
+        binding.inputPlaylistDescription.setText(viewModel.getAlbumDescription())
         var descriptionTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                albumDescription = s?.toString() ?: ""
+                val albumDescription = s?.toString() ?: ""
+                viewModel.setAlbumDescription(albumDescription)
             }
         }
         binding.inputPlaylistDescription.addTextChangedListener(descriptionTextWatcher)
@@ -85,14 +107,7 @@ class PlaylistAddingFragment: Fragment() {
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 //обрабатываем событие выбора пользователем фотографии
-                if (uri != null) {
-                    binding.addedImage.setImageURI(uri)
-                    imageUri= uri
-                    binding.addedImage.setScaleType( CENTER_CROP)
-
-                } else {
-                    Log.d("PhotoPicker", "No media selected")
-                }
+                setImage(uri)
             }
 
 
@@ -104,42 +119,38 @@ class PlaylistAddingFragment: Fragment() {
 
         //  Создать альбом
         binding.buttonCreatePlaylist.setOnClickListener {
-            if (binding.buttonCreatePlaylist.isEnabled() && albumName.isNotEmpty()) {
+            if (binding.buttonCreatePlaylist.isEnabled() && viewModel.getAlbumName().isNotEmpty()) {
                 savePlaylist()
                 findNavController().navigateUp()
-            } else {
-                TODO("???")
             }
+        }
+    }
+
+    private fun setImage(uri:Uri?){
+        if (uri != null) {
+            binding.addedImage.setImageURI(uri)
+            viewModel.setImageUri(uri)
+            binding.addedImage.setScaleType( CENTER_CROP)
         }
     }
 
     private fun savePlaylist() {
+        val albumName = viewModel.getAlbumName()
         if (albumName.isNotEmpty()) {
-            viewModel.addPlaylistToBD(
-                Playlist(
-                    playlstName = albumName,
-                    playlistDescription = albumDescription,
-                    playlistImageDir = imageUri
-                )
-            )
-            if (imageUri!=null){
-                viewModel.saveImageToPrivateStorage(imageUri!!, albumName)
-            }
-
+            viewModel.savePlaylist()
             binding.buttonCreatePlaylist.let {
-                Snackbar.make(it, "Плейлист $albumName создан", Snackbar.LENGTH_LONG).show()
+                binding.buttonCreatePlaylist.let {
+                    Snackbar.make(it, viewModel.getSavePlaylistMessage(), Snackbar.LENGTH_LONG).show()
+                }
             }
         }
     }
 
 
-
-    private fun   returnWithDialog()
-    {
-        if (albumName.isNotEmpty()|| albumDescription.isNotEmpty()||imageUri.toString().isNotEmpty()){
+    private fun   returnWithDialog() {
+        if (viewModel.hasData()){
             showDialog()
         }
-
     }
 
     private fun   showDialog() {
@@ -149,7 +160,6 @@ class PlaylistAddingFragment: Fragment() {
             .setNeutralButton(requireContext().getString(R.string.cancel)) { dialog, which ->
             }
             .setPositiveButton(requireContext().getString(R.string.finish)) { dialog, which ->
-
                 findNavController().navigateUp()
             }
             .show()
@@ -157,5 +167,13 @@ class PlaylistAddingFragment: Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    companion object{
+        const val PLAYLIST_ID = "PlaylistId"
+        const val PREVIOUS_FRAGMENT = "previousFragment"
+        const val ADDING_FRAGMENT="playlistAddingFragment"
+        const val PLAYLIST_SCREEN_FRAGMENT="playlistScreenFragment"
+        const val PLAYLISTS_FRAGMENT="paylistsFragment"
+        const val PLAYER_FRAGMENT="payerFragment"
     }
 }
