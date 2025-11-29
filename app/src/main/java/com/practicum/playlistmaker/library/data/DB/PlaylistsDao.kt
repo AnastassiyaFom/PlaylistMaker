@@ -14,6 +14,9 @@ interface PlaylistsDao {
     @Delete(entity = PlaylistEntity::class)
     suspend fun deletePlaylist(playlist: PlaylistEntity)
 
+    @Query("DELETE FROM playlists_table WHERE playlistId = :id")
+    suspend fun deletePlaylistById(id: Int)
+
     @Query("SELECT * FROM playlists_table WHERE playlistId = :id")
     suspend fun getPlaylistById(id:Int): PlaylistEntity?
 
@@ -25,5 +28,8 @@ interface PlaylistsDao {
 
     @Query("UPDATE playlists_table SET tracksCount = tracksCount + 1 WHERE playlistId = :playlistId")
     suspend fun incrementTracksCount(playlistId: Int)
+
+    @Query("UPDATE playlists_table SET tracksCount = tracksCount - 1 WHERE playlistId = :playlistId")
+    suspend fun decrementTracksCount(playlistId: Int)
 
 }

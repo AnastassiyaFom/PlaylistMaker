@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.library.domain.Playlist
 import com.practicum.playlistmaker.library.domain.db.PlaylistsInteractor
 import com.practicum.playlistmaker.library.domain.db.SelectedTracksInteractor
-import com.practicum.playlistmaker.library.ui.viewModel.PlaylistsState
+import com.practicum.playlistmaker.library.ui.viewModel.playlists.PlaylistsState
 import com.practicum.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

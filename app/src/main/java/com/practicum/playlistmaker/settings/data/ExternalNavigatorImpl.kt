@@ -14,7 +14,7 @@ class ExternalNavigatorImpl(private val context: Context):ExternalNavigator {
         context.startActivity(openlink)
     }
 
-    override fun shareLink(sharingMessage: String) {
+    override fun share(sharingMessage: String) {
         val shareAppIntent = Intent(Intent.ACTION_SEND)
         shareAppIntent.setType("text/plain")
         shareAppIntent.putExtra(Intent.EXTRA_TEXT, sharingMessage)

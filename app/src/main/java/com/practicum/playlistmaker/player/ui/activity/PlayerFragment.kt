@@ -7,6 +7,7 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,23 +19,24 @@ import com.google.android.material.snackbar.Snackbar
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.library.domain.Playlist
-import com.practicum.playlistmaker.library.ui.activity.PlaylistsAdapter
-import com.practicum.playlistmaker.library.ui.viewModel.PlaylistsState
+import com.practicum.playlistmaker.library.ui.activity.playlists.PlaylistAddingFragment
+import com.practicum.playlistmaker.library.ui.activity.playlists.PlaylistAddingFragment.Companion.PLAYER_FRAGMENT
+import com.practicum.playlistmaker.library.ui.viewModel.playlists.PlaylistsState
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerState
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.Track
-import com.practicum.playlistmaker.search.ui.view.OnItemClickListener
 import com.practicum.playlistmaker.utils.debounce
 
 import org.koin.android.ext.android.inject
 
 class PlayerFragment : Fragment() {
+    private var fragmentIdentificator = PLAYER_FRAGMENT
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
     private lateinit var onPlaylistClickDebounce: (Playlist) -> Unit
     private val viewModel : PlayerViewModel by inject()
     private  var checkedTrack: Track =Track()
-    private  var playlists: MutableList<Playlist> = mutableListOf()
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -133,9 +135,9 @@ class PlayerFragment : Fragment() {
 
         binding.newPlaylist.setOnClickListener {
             findNavController().navigate(
-                R.id.action_playerFragment_to_playlistAddingFragment
+                R.id.action_playerFragment_to_playlistAddingFragment,
+                bundleOf(PlaylistAddingFragment.PREVIOUS_FRAGMENT to fragmentIdentificator)
             )
-
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())

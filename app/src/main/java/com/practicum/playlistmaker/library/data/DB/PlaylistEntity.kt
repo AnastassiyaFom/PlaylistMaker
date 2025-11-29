@@ -7,10 +7,19 @@ import androidx.room.PrimaryKey
 data class PlaylistEntity (
     @PrimaryKey (autoGenerate = true)
     val playlistId:Int = 0,
-
-    var playlstName: String,
-    var playlistDescription:String = "",
-    var playlistImageDir:String="",
-    var tracks:String = "",
-    var tracksCount:Int=0
+    val playlstName: String,
+    val playlistDescription:String ,
+    val playlistImageDir:String,
+    val tracks:String,
+    val tracksCount:Int=0
 )
+{
+    constructor():  this(
+        playlistId = 0,
+        playlstName = "",
+        playlistDescription = "",
+        playlistImageDir = "",
+        tracks = "",
+        tracksCount = 0
+    )
+}

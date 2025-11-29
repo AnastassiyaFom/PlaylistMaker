@@ -62,6 +62,7 @@ package com.practicum.playlistmaker.library.data
 import com.practicum.playlistmaker.library.data.DB.SelectedTrackEntity
 import com.practicum.playlistmaker.library.data.DB.SelectedTracksDao
 import com.practicum.playlistmaker.library.data.DB.SelectedTrackDbConvertor
+import com.practicum.playlistmaker.library.domain.Playlist
 import com.practicum.playlistmaker.library.domain.db.SelectedTracksRepository
 import com.practicum.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
@@ -116,6 +117,7 @@ class SelectedTracksRepositoryImpl (
         if (track == null) return null
         return convertFromEntityToTrack(track!!)
     }
+
 
 
 }

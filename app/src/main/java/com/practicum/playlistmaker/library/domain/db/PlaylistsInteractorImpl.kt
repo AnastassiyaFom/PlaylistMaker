@@ -15,8 +15,8 @@ class PlaylistsInteractorImpl(
         return playlistRepository.getAllPlaylists()
     }
 
-    override fun getTracksInPlaylist(playlist: Playlist): Flow<List<Track>> {
-       return playlistRepository.getTracksInPlaylist(playlist)
+    override fun getTracksInPlaylist(playlistId: Int): Flow<List<Track>> {
+       return playlistRepository.getTracksInPlaylist(playlistId)
     }
 
     override fun addTrackToPlaylist(track: Track, playlist: Playlist) {
@@ -25,4 +25,20 @@ class PlaylistsInteractorImpl(
     override fun isTrackInPlaylist(trackId: Int, playlistId:Int):Boolean{
        return  playlistRepository.isTrackInPlaylist(trackId,playlistId)
     }
+
+    override fun getPlaylistById(playlistId: Int): Playlist {
+        return  playlistRepository.getPlaylistById(playlistId)
+    }
+
+    override fun deleteTrackFromPlaylist(trackId: Int, playlistId: Int) {
+        playlistRepository.deleteTrackFromPlaylist(trackId=trackId, playlistId=playlistId)
+    }
+
+    override fun deletePlaylist(playlistId: Int) {
+        playlistRepository.deletePlaylist(playlistId)
+    }
+    override  fun refrashDataInDb(playlistId:Int,playlist:Playlist){
+        playlistRepository.refrashDataInDb(playlistId,playlist)
+    }
+
 }

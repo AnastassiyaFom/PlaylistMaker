@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/background_not_main"
-    tools:context=".library.ui.activity.PlaylistAddingFragment"
+    tools:context=".library.ui.activity.playlists.PlaylistAddingFragment"
     >
     <LinearLayout
         android:id="@+id/back"
@@ -24,6 +24,7 @@
             style="@style/ReturnArrowStyle"
             />
         <TextView
+            android:id="@+id/tittle"
             style="@style/Tittle"
             android:layout_marginBottom="12dp"
             android:text="@string/new_playlist"/>
