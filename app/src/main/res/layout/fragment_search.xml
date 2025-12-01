@@ -46,13 +46,14 @@
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:lines="1"
-                android:paddingLeft="12dp"
+                android:paddingStart="12dp"
                 android:singleLine="true"
                 android:textColor="@color/black"
                 android:textColorHint="@color/edit_text_field"
-                android:textCursorDrawable="@color/black"
+                android:textCursorDrawable="@color/cursor_color"
                 app:drawableStartCompat="@drawable/icon_search_14"
-                app:drawableTint="@color/edit_text_field" />
+                app:drawableTint="@color/edit_text_field"
+                />
 
             <ImageView
                 android:id="@+id/clearSearch"

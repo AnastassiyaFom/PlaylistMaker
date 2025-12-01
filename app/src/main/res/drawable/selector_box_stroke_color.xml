@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-        <item android:state_focused="true" android:color="@color/add_playlist_frame"/>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+        <item android:state_focused="true"
+            android:color="@color/add_playlist_button"
+            />
+        <item android:state_focused="false"
+            android:color="@color/add_playlist_frame" />
         <item android:color="@color/add_playlist_frame"/>
 </selector>

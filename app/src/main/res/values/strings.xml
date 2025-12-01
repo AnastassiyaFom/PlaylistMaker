@@ -5,6 +5,7 @@
     <string name="Настройки">Настройки</string>
     <string name="dark_theme">"Темная тема"</string>
     <string name="share_app">"Поделиться приложением"</string>
+    <string name="share">"Поделиться"</string>
     <string name="write_to_support">"Написать в поддержку"</string>
     <string name="user_agr">"Пользовательское соглашение"</string>
     <string name="share_message">"https://practicum.yandex.ru/android-developer/"</string>
@@ -32,14 +33,29 @@
     <string name="playlist_name">Название*</string>
     <string name="playlist_description">Описание</string>
     <string name="create">Создать</string>
-    <string name="one_track">трек</string>
-    <string name="two_tracks">трека</string>
-    <string name="many_tracks">треков</string>
     <string name="creating_playlist_dialog_hadder">Завершить создание плейлиста?</string>
     <string name="creating_playlist_dialog_message">Все несохраненные данные будут потеряны</string>
     <string name="cancel">Отмена</string>
     <string name="finish">Завершить</string>
     <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="edit_information">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+    <string name="one_track">трек</string>
+    <string name="two_tracks">трека</string>
+    <string name="many_tracks">треков</string>
+
+    <string name="one_minutes">минута</string>
+    <string name="two_minutes">минуты</string>
+    <string name="many_minutes">минут</string>
+    <string name="delete_track_dialog_hadder">Хотите удалить трек?</string>
+    <string name="no">НЕТ</string>
+    <string name="yes">ДА</string>
+    <string name="no_tracks">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="delete_playlist_dialog_hadder">Удалить плейлист</string>
+    <string name="delete_playlist_dialog_message">Хотите удалить плейлист?</string>
+    <string name="save">Сохранить</string>
+    <string name="edit">Редактировать</string>
+    <string name="no_tracks_in_pl">В этом плейлисте нет треков</string>
 
 
 </resources>

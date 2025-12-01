@@ -34,9 +34,8 @@ class PlaylistsRepositoryImpl(
         emit(convertFromEntityToPlaylist(playlists))
     }
 
-    override fun getTracksInPlaylist(playlist: Playlist): Flow<List<Track>> = flow {
+    override fun getTracksInPlaylist(plId: Int): Flow<List<Track>> = flow {
         // Нужна ли здесь проверка на несуществующий плейлист?
-        val plId=playlist.id
         var tracksIdList:MutableList<Int> = mutableListOf()
         val items: List<PlaylistTrackEntity?> = playlistTrackTable.getItemsByPlaylistId(plId)
         if (items!=null) {
@@ -49,6 +48,7 @@ class PlaylistsRepositoryImpl(
         else emit(mutableListOf())
 
     }
+
     override  fun addTrackToPlaylist(track:Track, playlist: Playlist){
         runBlocking {
             val plId = playlistsTable.getPlaylistById(playlist.id)
@@ -64,15 +64,24 @@ class PlaylistsRepositoryImpl(
             }
         }
     }
-    private fun convertFromEntityToPlaylist(playlists: List<PlaylistEntity?>): List<Playlist> {
-        return playlists.map { playlist -> playlistsDbConvertor.map(playlist) }
-    }
-    private fun convertFromPlaylistToEntity(playlists: List<Playlist?>): List<PlaylistEntity> {
-        return playlists.map { playlist -> playlistsDbConvertor.map(playlist) }
-    }
 
-    private fun convertFromEntityToTrack(tracks: List<TrackEntity?>): List<Track> {
-        return tracks.map { track -> tracksDBConverter.map(track) }
+    override fun deleteTrackFromPlaylist(trackId:Int, playlistId:Int){
+        if (isTrackInPlaylist(trackId, playlistId)) {
+            runBlocking {
+                val item = playlistTrackTable.getItemByPlaylistIdAndTrackId(
+                    trackId = trackId,
+                    playlistId = playlistId
+                )
+                if (item!=null) {
+                    playlistTrackTable.deletePlaylistTrack(item)
+                    playlistsTable.decrementTracksCount(playlistId)
+                    val otherPlaylists = playlistTrackTable.getItemsByTrackId(trackId)
+                    if (otherPlaylists==null || otherPlaylists.isEmpty()){
+                        tracksTable.deleteTrackById(trackId)
+                    }
+                }
+            }
+        }
     }
 
     override  fun isTrackInPlaylist(trackId: Int, playlistId: Int): Boolean {
@@ -84,6 +93,47 @@ class PlaylistsRepositoryImpl(
         else return true
     }
 
+    override fun getPlaylistById(playlistId: Int):Playlist{
+        var  playlist:PlaylistEntity
+        runBlocking {
+            playlist = playlistsTable.getPlaylistById(playlistId)?: PlaylistEntity()
+        }
+        return  playlistsDbConvertor.map(playlist)
+    }
+
+    override fun deletePlaylist(playlistId: Int) {
+        runBlocking {
+            playlistsTable.deletePlaylistById(playlistId)
+            playlistTrackTable.deleteItemsByPlaylistId(playlistId)
+
+        }
+
+
+    }
+
+    override  fun refrashDataInDb(plListId:Int,plList:Playlist){
+        val  playlistEntity=PlaylistEntity(
+            playlistId = plListId,
+            playlstName=plList.playlstName,
+            playlistDescription =plList.playlistDescription,
+            playlistImageDir=plList.playlistImageDir.toString(),
+            tracks =plList.tracks ,
+            tracksCount=plList.tracksCount
+        )
+        runBlocking {
+            playlistsTable.insertPlaylist(playlistEntity)
+        }
+    }
+
+    private fun convertFromEntityToPlaylist(playlists: List<PlaylistEntity?>): List<Playlist> {
+        return playlists.map { playlist -> playlistsDbConvertor.map(playlist) }
+    }
+    private fun convertFromPlaylistToEntity(playlists: List<Playlist?>): List<PlaylistEntity> {
+        return playlists.map { playlist -> playlistsDbConvertor.map(playlist) }
+    }
+    private fun convertFromEntityToTrack(tracks: List<TrackEntity?>): List<Track> {
+        return tracks.map { track -> tracksDBConverter.map(track) }
+    }
 
 
 }

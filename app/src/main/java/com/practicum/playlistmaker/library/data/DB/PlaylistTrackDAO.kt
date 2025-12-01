@@ -11,11 +11,18 @@ interface PlaylistTrackDAO {
     @Insert(entity = PlaylistTrackEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlaylistTrack(re:PlaylistTrackEntity)
 
-    @Delete(entity = PlaylistTrackEntity::class)
+    @Delete(entity = PlaylistTrackEntity::class )
     suspend fun deletePlaylistTrack(re:PlaylistTrackEntity)
+
+
+    @Query("DELETE FROM playlist_track_re_table WHERE playlistId = :id")
+    suspend fun deleteItemsByPlaylistId(id: Int)
 
     @Query("SELECT * FROM playlist_track_re_table WHERE playlistId = :id")
     suspend fun getItemsByPlaylistId(id:Int): List<PlaylistTrackEntity?>
+
+    @Query("SELECT * FROM playlist_track_re_table WHERE trackId = :id")
+    suspend fun getItemsByTrackId(id:Int): List<PlaylistTrackEntity?>
 
 
     @Query("SELECT * FROM playlist_track_re_table WHERE trackId = :trackId AND playlistId=:playlistId")

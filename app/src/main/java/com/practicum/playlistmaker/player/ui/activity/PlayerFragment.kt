@@ -7,6 +7,8 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,27 +20,30 @@ import com.google.android.material.snackbar.Snackbar
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.library.domain.Playlist
-import com.practicum.playlistmaker.library.ui.activity.PlaylistsAdapter
-import com.practicum.playlistmaker.library.ui.viewModel.PlaylistsState
+import com.practicum.playlistmaker.library.ui.activity.playlists.PlaylistAddingFragment
+import com.practicum.playlistmaker.library.ui.activity.playlists.PlaylistAddingFragment.Companion.PLAYER_FRAGMENT
+import com.practicum.playlistmaker.library.ui.viewModel.playlists.PlaylistsState
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerState
 import com.practicum.playlistmaker.player.ui.viewModel.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.Track
-import com.practicum.playlistmaker.search.ui.view.OnItemClickListener
 import com.practicum.playlistmaker.utils.debounce
 
 import org.koin.android.ext.android.inject
 
 class PlayerFragment : Fragment() {
+    private var fragmentIdentificator = PLAYER_FRAGMENT
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
     private lateinit var onPlaylistClickDebounce: (Playlist) -> Unit
     private val viewModel : PlayerViewModel by inject()
     private  var checkedTrack: Track =Track()
-    private  var playlists: MutableList<Playlist> = mutableListOf()
+    private lateinit var bottomSheetBehavior:BottomSheetBehavior<LinearLayout>
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         _binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.standardBottomSheet)
         return binding.root
     }
 
@@ -109,7 +114,7 @@ class PlayerFragment : Fragment() {
 
 
     private fun showBottomSheet() {
-        val bottomSheetBehavior = BottomSheetBehavior.from(binding.standardBottomSheet)
+        //val bottomSheetBehavior = BottomSheetBehavior.from(binding.standardBottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -133,9 +138,9 @@ class PlayerFragment : Fragment() {
 
         binding.newPlaylist.setOnClickListener {
             findNavController().navigate(
-                R.id.action_playerFragment_to_playlistAddingFragment
+                R.id.action_playerFragment_to_playlistAddingFragment,
+                bundleOf(PlaylistAddingFragment.PREVIOUS_FRAGMENT to fragmentIdentificator)
             )
-
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -148,9 +153,7 @@ class PlayerFragment : Fragment() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             addTrackToPlaylist(playlist)
         }
-
     }
-
 
     override fun onPause() {
         super.onPause()
@@ -197,6 +200,7 @@ class PlayerFragment : Fragment() {
                     "Трек уже добавлен в плейлист ${playlist.playlstName}",
                     Snackbar.LENGTH_LONG
                 ).show()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
             }
             else{
                 viewModel.addTrackToPlaylist(checkedTrack, playlist)
