@@ -58,14 +58,11 @@ class PlaylistAddingFragment: Fragment() {
         binding.buttonCreatePlaylist.setEnabled(false)
         // Возврат в предыдущую активити или фрагмент
         binding.backFromAddingPlaylist.setOnClickListener {
-            returnWithDialog()
+            back()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                when (previousFragment){
-                    PLAYLIST_SCREEN_FRAGMENT->findNavController().navigateUp()
-                        else-> returnWithDialog()
-                }
+               back()
             }
         })
         // Для ввода имени альбома
@@ -146,7 +143,12 @@ class PlaylistAddingFragment: Fragment() {
         }
     }
 
-
+private fun back() {
+    when (previousFragment) {
+        PLAYLIST_SCREEN_FRAGMENT -> findNavController().navigateUp()
+        else -> returnWithDialog()
+    }
+}
     private fun   returnWithDialog() {
         if (viewModel.hasData()){
             showDialog()

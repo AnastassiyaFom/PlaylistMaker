@@ -50,8 +50,6 @@ class PlaylistAddingViewModel(
         imageUri = uri
     }
 
-
-
     @SuppressLint("UseCompatLoadingForDrawables")
     fun setPlaylistData(prFragment:String, plListId:Int){
         playlistId = plListId
@@ -83,7 +81,7 @@ class PlaylistAddingViewModel(
                 playlistImageDir = imageUri
             )
             // Как проверить на то, что не существует картинки с таким именем
-            if (imageUri != null) {
+            if (imageUri != null && imageUri.toString().isNotEmpty()) {
                 saveImageToPrivateStorage(imageUri!!, albumName)
             }
 
@@ -92,8 +90,6 @@ class PlaylistAddingViewModel(
                     refrashDataInDb(playlistId,playlist)
                 }
                 else -> addPlaylistToBD(playlist)
-
-
             }
         }
     }

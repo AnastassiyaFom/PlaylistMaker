@@ -7,6 +7,7 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -36,11 +37,13 @@ class PlayerFragment : Fragment() {
     private lateinit var onPlaylistClickDebounce: (Playlist) -> Unit
     private val viewModel : PlayerViewModel by inject()
     private  var checkedTrack: Track =Track()
+    private lateinit var bottomSheetBehavior:BottomSheetBehavior<LinearLayout>
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         _binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.standardBottomSheet)
         return binding.root
     }
 
@@ -111,7 +114,7 @@ class PlayerFragment : Fragment() {
 
 
     private fun showBottomSheet() {
-        val bottomSheetBehavior = BottomSheetBehavior.from(binding.standardBottomSheet)
+        //val bottomSheetBehavior = BottomSheetBehavior.from(binding.standardBottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -150,9 +153,7 @@ class PlayerFragment : Fragment() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             addTrackToPlaylist(playlist)
         }
-
     }
-
 
     override fun onPause() {
         super.onPause()
@@ -199,6 +200,7 @@ class PlayerFragment : Fragment() {
                     "Трек уже добавлен в плейлист ${playlist.playlstName}",
                     Snackbar.LENGTH_LONG
                 ).show()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
             }
             else{
                 viewModel.addTrackToPlaylist(checkedTrack, playlist)

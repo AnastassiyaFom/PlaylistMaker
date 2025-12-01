@@ -55,18 +55,21 @@
             app:boxBackgroundColor="@color/background_not_main"
             app:boxStrokeColor="@drawable/selector_box_stroke_color"
             app:helperTextTextColor="@color/text"
-            app:hintTextColor="@color/text"
+            app:hintTextColor="@color/add_playlist_button"
+            app:hintAnimationEnabled = "true"
             android:textCursorDrawable="@color/text"
             android:layout_marginTop="32dp"
             android:layout_width="328dp"
             android:layout_height="wrap_content"
             android:textColorHint="@color/text"
             android:hint="@string/playlist_name"
+
             >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_playlist_name"
                 style="@style/AddingPlaylistAttr"
+
                 tools:text="Мой плейлист"
                 />
         </com.google.android.material.textfield.TextInputLayout>
@@ -79,7 +82,7 @@
             app:boxBackgroundColor="@color/background_not_main"
             app:boxStrokeColor="@drawable/selector_box_stroke_color"
             app:helperTextTextColor="@color/text"
-            app:hintTextColor="@color/text"
+            app:hintTextColor="@color/add_playlist_button"
             android:textCursorDrawable="@color/text"
             android:layout_marginTop="@dimen/margin_frame"
             android:layout_width="328dp"
