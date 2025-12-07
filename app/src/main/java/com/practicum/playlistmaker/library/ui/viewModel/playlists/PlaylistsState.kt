@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.library.ui.viewModel
+package com.practicum.playlistmaker.library.ui.viewModel.playlists
 
 import com.practicum.playlistmaker.library.domain.Playlist
 

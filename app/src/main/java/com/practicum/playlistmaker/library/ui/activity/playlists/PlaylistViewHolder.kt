@@ -1,8 +1,7 @@
-package com.practicum.playlistmaker.library.ui.activity
+package com.practicum.playlistmaker.library.ui.activity.playlists
 
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView.ScaleType.CENTER_CROP
@@ -29,14 +28,7 @@ class PlaylistViewHolder (private val binding: FragmentPlaylistItemBinding,
     }
 
     private fun getTrackCountString(count:Int):String {
-        var trackStr=""
-        when (count){
-            1->trackStr = context.resources.getString(R.string.one_track)
-            in 2..4->trackStr = context.resources.getString(R.string.two_tracks)
-            else->trackStr = context.resources.getString(R.string.many_tracks)
-        }
-        trackStr = count.toString() + " " + trackStr
-        return trackStr
+        return count.toString()+" " + context.resources.getQuantityString(R.plurals.plural_track,count)
     }
 
     companion object {

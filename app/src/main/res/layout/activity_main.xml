@@ -40,7 +40,7 @@
         app:iconPadding="@dimen/icon_padding"
         app:iconTint="@color/black" />
     <Button
-        android:id="@+id/settings"
+        android:id="@+id/menu"
         style="@style/BigButtonStyle"
         android:text="@string/Настройки"
         app:icon="@drawable/icon_settings"

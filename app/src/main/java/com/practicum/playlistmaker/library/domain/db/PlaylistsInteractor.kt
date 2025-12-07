@@ -7,8 +7,12 @@ import kotlinx.coroutines.flow.Flow
 interface PlaylistsInteractor {
     fun addNewPlaylist(playlist: Playlist)
     fun getAllPlaylists(): Flow<List<Playlist>>
-    fun getTracksInPlaylist(playlist: Playlist):Flow<List<Track>>
+    fun getTracksInPlaylist(playlist: Int):Flow<List<Track>>
     fun addTrackToPlaylist(track: Track, playlist: Playlist)
     fun isTrackInPlaylist(trackId: Int, playlistId:Int):Boolean
+    fun getPlaylistById(playlistId: Int):Playlist
+    fun deleteTrackFromPlaylist(trackId: Int, playlistId: Int)
+    fun deletePlaylist(playlistId: Int)
+    fun refrashDataInDb(playlistId:Int,playlist:Playlist)
 
 }

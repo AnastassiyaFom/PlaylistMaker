@@ -1,29 +1,16 @@
-package com.practicum.playlistmaker.library.ui.viewModel
+package com.practicum.playlistmaker.library.data
 
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.core.net.toUri
-import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.library.domain.Playlist
-import com.practicum.playlistmaker.library.domain.db.PlaylistsInteractor
+import com.practicum.playlistmaker.library.domain.FileRepository
 import java.io.File
 import java.io.FileOutputStream
 
-class NewPlaylistViewModel(
-    private val playlistsInteractor: PlaylistsInteractor,
-    private val context: Context
-): ViewModel() {
-
-
-    fun addPlaylistToBD(playlist: Playlist) {
-
-        playlistsInteractor.addNewPlaylist(playlist)
-    }
-
-    fun saveImageToPrivateStorage(uri: Uri, albumName:String) {
+class FileRepositoryImpl (private val context: Context): FileRepository {
+    override fun saveImageToPrivateStorage(uri: Uri, albumName: String) {
         val contentResolver = context.contentResolver
         // передаём необходимый флаг на чтение
         val readFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -50,7 +37,4 @@ class NewPlaylistViewModel(
             .decodeStream(inputStream)
             .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
     }
-
-
 }
-
